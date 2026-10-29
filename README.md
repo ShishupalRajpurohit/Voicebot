@@ -1,4 +1,4 @@
-# Sandip's 100x Interview Voicebot
+# Shishupal's 100x Interview Voicebot
 
 A minimal Next.js frontend with one FastAPI backend file for the 100x Stage 1 assessment. It supports text, microphone recording, Groq Whisper speech transcription, reviewed answers for the five sample prompts, Groq-first/OpenRouter-second LLM fallback, and browser speech playback.
 
@@ -52,6 +52,6 @@ Set `FASTAPI_BACKEND_URL=http://localhost:8000` inside the frontend `.env.local`
 ## Important behavior
 
 - If speech transcription appears wrong, the app refuses to answer a short, suspicious transcript and places it in the text field for editing. This is deliberate: guessing the intended question is worse than asking for clarification.
-- The browser's speech voice varies by device. This does not clone Sandip's voice.
+- The browser's speech voice varies by device. This does not clone Shishupal's voice.
 - The sample answers are intentionally conservative. Confirm that each answer sounds accurate before you submit the assessment.
 - The in-memory rate limiter is only a small demonstration safeguard and is not globally coordinated across serverless instances.

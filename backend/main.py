@@ -308,10 +308,11 @@ async def chat(request: Request) -> JSONResponse:  # Read form values manually s
             if len(audio_bytes) > MAX_AUDIO_BYTES:
                 return JSONResponse({"error": f"That recording is too large. Maximum size is {MAX_AUDIO_MB} MB."}, status_code=413, headers={"X-Correlation-ID": correlation_id})
 
-            # Validate content type (basic check)
+            # Validate content type (basic check) — accept base MIME type even with codec params (e.g., "audio/webm;codecs=opus")
             content_type = getattr(audio, "content_type", None) or "audio/webm"
             allowed_audio_types = {"audio/webm", "audio/ogg", "audio/wav", "audio/mpeg", "audio/mp4", "audio/mp3"}
-            if content_type not in allowed_audio_types:
+            base_content_type = content_type.split(";")[0].strip().lower()
+            if base_content_type not in allowed_audio_types:
                 return JSONResponse({"error": "Unsupported audio format. Please use WebM, OGG, WAV, or MP3."}, status_code=415, headers={"X-Correlation-ID": correlation_id})
 
             if not GROQ_API_KEY:  # Whisper is provided by Groq in this minimal voice pipeline.

@@ -11,7 +11,7 @@ const prompts = ["What should we know about your life story?", "What's your numb
 
 // Render the complete interview voicebot interface.
 export default function HomePage() { // Define the page component used at the public root URL.
-  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: "Hi, I'm an AI version representing Sandip. Ask me about my background, projects, strengths or how I approach problems." }]); // Start with a transparent greeting so evaluators know this is an AI representative.
+  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: "Hi, I'm an AI version representing Shishupal. Ask me about my background, projects, strengths or how I approach problems." }]); // Start with a transparent greeting so evaluators know this is an AI representative.
   const [question, setQuestion] = useState(""); // Track text currently entered into the question box.
   const [status, setStatus] = useState("Ready when you are."); // Show what the app is doing in plain language.
   const [busy, setBusy] = useState(false); // Prevent overlapping requests while a response is being generated.
@@ -122,9 +122,9 @@ export default function HomePage() { // Define the page component used at the pu
 
   return ( // Render the page with a header, transcript, text input, mic and prompt chips.
     <main>
-      <header><div><div className="eyebrow">100x · Gen AI assessment</div><h1>Meet Sandip’s AI voicebot</h1><p>An interactive, profile-grounded assistant for questions about my work and approach.</p></div></header>
+      <header><div><div className="eyebrow">100x · Gen AI assessment</div><h1>Meet Shishupal's AI voicebot</h1><p>An interactive, profile-grounded assistant for questions about my work and approach.</p></div></header>
       <section className="panel" aria-label="Voicebot conversation">
-        <div className="transcript" ref={transcriptRef} aria-live="polite">{messages.map((message, index) => <div className={`message ${message.role}`} key={`${message.role}-${index}`}><strong>{message.role === "assistant" ? "Sandip’s AI" : "You"}</strong><div>{message.content}</div></div>)}</div>
+        <div className="transcript" ref={transcriptRef} aria-live="polite">{messages.map((message, index) => <div className={`message ${message.role}`} key={`${message.role}-${index}`}><strong>{message.role === "assistant" ? "Shishupal's AI" : "You"}</strong><div>{message.content}</div></div>)}</div>
         <div className="status" role="status">{status}{provider ? ` · Response source: ${provider}` : ""}</div>
         {lastTranscript ? <p className="transcript-review">Last recognised speech: <strong>{lastTranscript}</strong>. If it is wrong, edit the text box and press Ask.</p> : null}
         <div className="controls">
