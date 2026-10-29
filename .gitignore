@@ -1,0 +1,17 @@
+# Exclude JavaScript dependencies because npm can recreate them from package.json.
+node_modules/
+# Exclude Next.js build output because the framework regenerates it.
+.next/
+# Exclude all local environment files so private API keys never enter Git history.
+.env
+.env.local
+.env.*.local
+backend/.env
+# Exclude local Python environments and compiled bytecode.
+backend/.venv/
+__pycache__/
+*.pyc
+# Exclude generated build output and local operating-system metadata.
+out/
+.DS_Store
+tsconfig.tsbuildinfo
