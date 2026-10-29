@@ -24,6 +24,22 @@ export default function HomePage() { // Define the page component used at the pu
   const chunksRef = useRef<BlobPart[]>([]); // Collect audio chunks until the user stops recording.
   const transcriptRef = useRef<HTMLDivElement | null>(null); // Reference the transcript so new messages can be brought into view.
 
+  // Cleanup on unmount: stop any active recording and speech
+  useEffect(() => {
+    return () => {
+      // Stop recording if active
+      if (recorderRef.current && recorderRef.current.state !== "inactive") {
+        recorderRef.current.stop();
+      }
+      // Stop all audio tracks
+      streamRef.current?.getTracks().forEach((track) => track.stop());
+      // Cancel speech synthesis
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []); // Run once on mount/unmount
+
   useEffect(() => { // Keep the latest message visible after a reply is added.
     transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior: "smooth" }); // Scroll only the transcript region, not the whole page.
   }, [messages]); // Run the scroll behavior whenever conversation messages change.
@@ -32,7 +48,12 @@ export default function HomePage() { // Define the page component used at the pu
     if (!voiceEnabled || typeof window === "undefined" || !("speechSynthesis" in window)) return; // Skip voice when disabled or unsupported by the browser.
     window.speechSynthesis.cancel(); // Stop previous speech so replies do not overlap.
     const utterance = new SpeechSynthesisUtterance(text); // Convert the answer text into a browser speech request.
-    utterance.lang = /[\u0900-\u097F]/.test(text) ? "hi-IN" : "en-IN"; // Select Hindi or Indian English based on the response script.
+
+    // Improved language detection: check for Devanagari, common Hinglish words, and Latin script
+    const hasDevanagari = /[\u0900-\u097F]/.test(text);
+    const hasHinglish = /\b(mai|main|mera|meri|mere|tum|tera|teri|tere|ham|hamara|hamari|kya|kaise|kahan|kab|kyun|kon|acha|accha|theek|thik|haan|nahi|nahin|ji|haanji|nahiji|bas|abhi|ab|kal|aaj|subah|shaam|raat|din|hafta|mahina|saal|kaam|kaam kar|chahiye|chahte|pasand|pasand hai|nahi pasand|achha|accha laga|bura|bura laga|problem|issue|solution|help|madad|shukriya|dhanyawad|sorry|maaf|kripya|please|thank you|thanks)\b/i.test(text);
+
+    utterance.lang = hasDevanagari ? "hi-IN" : (hasHinglish ? "hi-IN" : "en-IN"); // Select Hindi for Devanagari or Hinglish, English otherwise
     utterance.rate = 0.98; // Use a slightly measured pace for more natural interview-style speech.
     utterance.pitch = 1; // Keep a neutral pitch instead of an exaggerated voice effect.
     window.speechSynthesis.speak(utterance); // Play the answer using a voice available on the visitor's device.

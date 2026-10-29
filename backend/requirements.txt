@@ -1,10 +1,12 @@
 # FastAPI provides the minimal HTTP API used by the frontend.
-fastapi>=0.110.0
+fastapi==0.115.0
 # Uvicorn runs the asynchronous FastAPI server locally and in hosting environments.
-uvicorn[standard]>=0.28.0
+uvicorn[standard]==0.32.0
 # HTTPX calls Groq Whisper, Groq chat completions, and OpenRouter asynchronously.
-httpx>=0.27.0
+httpx==0.28.1
 # python-multipart lets FastAPI parse browser microphone recordings and text fields.
-python-multipart>=0.0.9
+python-multipart==0.0.9
 # python-dotenv loads backend/.env for local development without putting keys in frontend code.
-python-dotenv>=1.0.1
+python-dotenv==1.0.1
+# redis provides distributed rate limiting across serverless instances (optional)
+redis==5.2.0

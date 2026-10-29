@@ -20,13 +20,31 @@ export async function POST(request: Request) {
       else outgoing.append(key, value);
     }
 
+    // Forward correlation ID if present (for request tracing)
+    const correlationId = request.headers.get("x-correlation-id") || crypto.randomUUID().slice(0, 8);
+
     // Send user input to FastAPI; the Groq and OpenRouter keys stay exclusively on the Python server.
     const forwardedIp = request.headers.get("x-forwarded-for");
-    const response = await fetch(`${backendUrl}/api/v1/chat`, { method: "POST", headers: forwardedIp ? { "X-Forwarded-For": forwardedIp } : undefined, body: outgoing, signal: AbortSignal.timeout(35_000) });
+    const response = await fetch(`${backendUrl}/api/v1/chat`, {
+      method: "POST",
+      headers: {
+        ...(forwardedIp ? { "X-Forwarded-For": forwardedIp } : {}),
+        "X-Correlation-ID": correlationId
+      },
+      body: outgoing,
+      signal: AbortSignal.timeout(35_000)
+    });
 
     // Return FastAPI's JSON and status code to the browser without leaking server exception details.
     const body = await response.text();
-    return new Response(body, { status: response.status, headers: { "Content-Type": response.headers.get("content-type") || "application/json" } });
+    const responseHeaders: Record<string, string> = {
+      "Content-Type": response.headers.get("content-type") || "application/json"
+    };
+    // Pass through correlation ID
+    const returnedCorrelationId = response.headers.get("x-correlation-id");
+    if (returnedCorrelationId) responseHeaders["X-Correlation-ID"] = returnedCorrelationId;
+
+    return new Response(body, { status: response.status, headers: responseHeaders });
   } catch (error) {
     // Log only a short error description so keys and user recordings are never written to browser-facing output.
     console.error("FastAPI proxy failed:", error instanceof Error ? error.message : "Unknown error");
