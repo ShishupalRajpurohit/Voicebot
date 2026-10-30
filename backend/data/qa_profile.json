@@ -1,0 +1,78 @@
+{
+  "prepared_answers": {
+    "life_story": {
+      "question_patterns": [
+        "life story",
+        "background",
+        "tell me about yourself",
+        "your journey"
+      ],
+      "keywords": ["life", "story", "background", "journey", "yourself", "tell", "career", "history", "bio", "about", "who", "experience", "work", "education", "studied", "degree", "college", "university", "origin", "started", "begin", "path"],
+      "answer": "I started in electrical engineering and began my career in service engineering, where I learned to troubleshoot real-world problems systematically. I later moved into data science through training and an internship, and then into AI and data science roles. Today, I build practical AI prototypes using Python, LLMs and RAG, while continuing to improve my software engineering fundamentals by building and testing projects."
+    },
+    "superpower": {
+      "question_patterns": [
+        "superpower",
+        "greatest strength",
+        "strongest point",
+        "best strength"
+      ],
+      "keywords": ["superpower", "strength", "strongest", "best", "greatest", "skill", "talent", "ability", "good at", "excel", "specialty", "expertise", "strong", "proud", "achievement", "standout", "unique", "advantage"],
+      "answer": "My strongest point is turning a vague idea into a practical first version. I break problems into smaller steps, test an approach with the tools available, and then check what actually works. I try to be honest about the difference between a quick prototype and something that is production-ready."
+    },
+    "growth_areas": {
+      "question_patterns": [
+        "top\\s*3",
+        "three areas",
+        "growth areas",
+        "areas.*grow",
+        "improve.*areas"
+      ],
+      "keywords": ["growth", "areas", "improve", "improvement", "weakness", "weaknesses", "develop", "better", "learn", "top", "three", "3", "lack", "gap", "shortcoming", "challenge", "difficult", "hard", "struggle", "weak", "improve", "improving", "development"],
+      "answer": "The top three areas I want to improve are software engineering fundamentals, production reliability, and explaining technical trade-offs clearly. I want to become more independent at writing maintainable code, get better at testing failure cases, and explain why a solution fits the actual problem. I treat these as ongoing areas of practice."
+    },
+    "misconception": {
+      "question_patterns": [
+        "misconception",
+        "coworkers think",
+        "co-workers think",
+        "colleagues think"
+      ],
+      "keywords": ["misconception", "coworkers", "colleagues", "think", "believe", "opinion", "perception", "misunderstand", "wrong", "assume", "assumption", "people", "team", "others", "view", "see", "judge", "coworker", "colleague"],
+      "answer": "I cannot confidently speak for what all my coworkers think, so I would not want to invent a misconception. When I am focused on solving something, people may see the implementation before they see all the checking and learning happening behind it. I try to make my assumptions and progress more visible as I work."
+    },
+    "boundaries": {
+      "question_patterns": [
+        "push.*boundar",
+        "your limits",
+        "comfort zone",
+        "stretch yourself"
+      ],
+      "keywords": ["push", "boundaries", "limits", "comfort", "zone", "stretch", "challenge", "grow", "limit", "boundary", "bound", "edge", "outside", "beyond", "extend", "reach", "expand", "learn new", "new skill", "challenge yourself", "push yourself", "limit"],
+      "answer": "I push my limits by choosing a concrete problem that is a little beyond what I already know and breaking it into smaller experiments. I use documentation and AI tools to speed up learning, but I still verify the output, test edge cases, and understand what I ship. That lets me explore new areas without pretending to know everything already."
+    },
+    "projects": {
+      "question_patterns": [
+        "projects",
+        "what.*built",
+        "what.*made",
+        "portfolio",
+        "work.*done",
+        "accomplish"
+      ],
+      "keywords": ["projects", "built", "made", "created", "developed", "portfolio", "work", "accomplish", "project", "application", "app", "system", "engine", "assistant", "website", "ecommerce", "renewal", "intelligence", "rag", "churn"],
+      "answer": "I've worked on several projects: a Renewal Intelligence Engine with churn prediction using Random Forest and a RAG pipeline; a RAG assistant using Python, FastAPI, LangChain, FAISS, Hugging Face embeddings and Streamlit; and an e-commerce website project. These showcase my work with Python, LLMs, RAG, and machine learning."
+    }
+  },
+  "fallback_response": "I don't have a verified answer for that question based on my profile data. I'm an AI representative with access to Sandip's verified background — education, work experience, projects, and skills. If you ask about something not covered in that profile (like personal opinions, specific metrics, or unverified details), I'll be honest that I don't have that information. You could ask me about my education, work history, projects, technical skills, or how I approach problems instead.",
+  "similar_question_threshold": 0.3,
+  "min_keyword_overlap": {
+    "life_story": 2,
+    "superpower": 1,
+    "growth_areas": 1,
+    "misconception": 1,
+    "boundaries": 1,
+    "projects": 1
+  },
+  "max_history_turns": 6
+}
