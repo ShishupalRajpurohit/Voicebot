@@ -40,6 +40,79 @@ export default function HomePage() { // Define the page component used at the pu
     };
   }, []); // Run once on mount/unmount
 
+  // Cache available voices grouped by language
+  const voicesByLangRef = useRef<Record<string, SpeechSynthesisVoice[]>>({});
+
+  // Load and organize voices on mount
+  useEffect(() => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length === 0) return; // Voices not loaded yet
+
+      // Debug: log all available voices
+      console.log('[Voicebot] Available voices:', voices.map(v => ({ name: v.name, lang: v.lang, default: v.default })));
+
+      // Group voices by language
+      const byLang: Record<string, SpeechSynthesisVoice[]> = {};
+      for (const voice of voices) {
+        const lang = voice.lang.split("-")[0]; // Base language (e.g., "hi", "en")
+        if (!byLang[lang]) byLang[lang] = [];
+        byLang[lang].push(voice);
+      }
+      voicesByLangRef.current = byLang;
+
+      console.log('[Voicebot] Voices grouped by language:', Object.keys(byLang).map(k => ({ lang: k, count: byLang[k].length, voices: byLang[k].map(v => v.name) })));
+    };
+
+    // Voices might already be loaded
+    loadVoices();
+
+    // Chrome fires voiceschanged event when voices load
+    if ("onvoiceschanged" in window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    return () => {
+      if ("onvoiceschanged" in window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
+    };
+  }, []);
+
+  // Select best voice for a given language
+  const selectVoiceForLang = (lang: string): SpeechSynthesisVoice | null => {
+    const baseLang = lang.split("-")[0];
+    const voices = voicesByLangRef.current[baseLang];
+    if (!voices || voices.length === 0) return null;
+
+    // Prefer high-quality voices (Google, Microsoft) and male voices for consistency
+    const preferredNames = [
+      "Google",
+      "Microsoft",
+    ];
+
+    // First try: preferred vendor + male
+    for (const pref of preferredNames) {
+      const found = voices.find(v => v.name.includes(pref) && v.name.toLowerCase().includes("male"));
+      if (found) return found;
+    }
+
+    // Second try: preferred vendor (any gender)
+    for (const pref of preferredNames) {
+      const found = voices.find(v => v.name.includes(pref));
+      if (found) return found;
+    }
+
+    // Third try: any male voice
+    const maleVoice = voices.find(v => v.name.toLowerCase().includes("male"));
+    if (maleVoice) return maleVoice;
+
+    // Fallback: first available
+    return voices[0];
+  };
+
   useEffect(() => { // Keep the latest message visible after a reply is added.
     transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior: "smooth" }); // Scroll only the transcript region, not the whole page.
   }, [messages]); // Run the scroll behavior whenever conversation messages change.
@@ -53,7 +126,19 @@ export default function HomePage() { // Define the page component used at the pu
     const hasDevanagari = /[\u0900-\u097F]/.test(text);
     const hasHinglish = /\b(mai|main|mera|meri|mere|tum|tera|teri|tere|ham|hamara|hamari|kya|kaise|kahan|kab|kyun|kon|acha|accha|theek|thik|haan|nahi|nahin|ji|haanji|nahiji|bas|abhi|ab|kal|aaj|subah|shaam|raat|din|hafta|mahina|saal|kaam|kaam kar|chahiye|chahte|pasand|pasand hai|nahi pasand|achha|accha laga|bura|bura laga|problem|issue|solution|help|madad|shukriya|dhanyawad|sorry|maaf|kripya|please|thank you|thanks)\b/i.test(text);
 
-    utterance.lang = hasDevanagari ? "hi-IN" : (hasHinglish ? "hi-IN" : "en-IN"); // Select Hindi for Devanagari or Hinglish, English otherwise
+    const targetLang = hasDevanagari ? "hi-IN" : (hasHinglish ? "hi-IN" : "en-IN"); // Select Hindi for Devanagari or Hinglish, English otherwise
+
+    // Select best voice for the target language
+    const selectedVoice = selectVoiceForLang(targetLang);
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      utterance.lang = selectedVoice.lang; // Use voice's native language for best quality
+      console.log('[Voicebot] Speaking with voice:', selectedVoice.name, 'lang:', selectedVoice.lang, 'targetLang:', targetLang);
+    } else {
+      utterance.lang = targetLang; // Fallback to target language
+      console.log('[Voicebot] No voice found for', targetLang, '- using default');
+    }
+
     utterance.rate = 0.98; // Use a slightly measured pace for more natural interview-style speech.
     utterance.pitch = 1; // Keep a neutral pitch instead of an exaggerated voice effect.
     window.speechSynthesis.speak(utterance); // Play the answer using a voice available on the visitor's device.
