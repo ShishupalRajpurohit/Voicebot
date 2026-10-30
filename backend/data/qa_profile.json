@@ -5,74 +5,1644 @@
         "life story",
         "background",
         "tell me about yourself",
-        "your journey"
+        "your journey",
+        "walk me through your resume"
       ],
-      "keywords": ["life", "story", "background", "journey", "yourself", "tell", "career", "history", "bio", "about", "who", "experience", "work", "education", "studied", "degree", "college", "university", "origin", "started", "begin", "path"],
-      "answer": "I started in electrical engineering and began my career in service engineering, where I learned to troubleshoot real-world problems systematically. I later moved into data science through training and an internship, and then into AI and data science roles. Today, I build practical AI prototypes using Python, LLMs and RAG, while continuing to improve my software engineering fundamentals by building and testing projects."
+      "keywords": [
+        "life",
+        "story",
+        "background",
+        "journey",
+        "yourself",
+        "career",
+        "history",
+        "about",
+        "experience",
+        "work",
+        "education",
+        "studied",
+        "degree",
+        "college",
+        "university",
+        "started",
+        "begin",
+        "path",
+        "resume"
+      ],
+      "answer": "I am an AI and Data Science Engineer with an engineering background and a career that has gradually moved from field engineering into data science and applied AI. I completed my B.Tech in Electrical Engineering from Government Engineering College, Bikaner, under Rajasthan Technical University in 2021. After working in service and biomedical engineering, I trained in data science, completed an internship at Ai Variant, and later worked on AI solutions at BrainHap and as a freelancer. My recent work focuses on Python, machine learning, LLM applications, RAG systems, and practical backend integrations."
     },
-    "superpower": {
+    "career_summary": {
       "question_patterns": [
-        "superpower",
-        "greatest strength",
-        "strongest point",
-        "best strength"
+        "career summary",
+        "professional summary",
+        "summarize your experience",
+        "walk me through your career"
       ],
-      "keywords": ["superpower", "strength", "strongest", "best", "greatest", "skill", "talent", "ability", "good at", "excel", "specialty", "expertise", "strong", "proud", "achievement", "standout", "unique", "advantage"],
-      "answer": "My strongest point is turning a vague idea into a practical first version. I break problems into smaller steps, test an approach with the tools available, and then check what actually works. I try to be honest about the difference between a quick prototype and something that is production-ready."
+      "keywords": [
+        "career",
+        "professional",
+        "summary",
+        "experience",
+        "roles",
+        "timeline",
+        "work",
+        "journey",
+        "resume"
+      ],
+      "answer": "My career has included service engineering, biomedical engineering, data science training and internship work, freelance AI projects, and an AI and Data Science Engineer role at BrainHap. These experiences helped me build a practical problem-solving approach and gradually focus on Python-based data and AI applications. I currently work independently on freelance AI and software projects."
+    },
+    "education": {
+      "question_patterns": [
+        "education",
+        "academic background",
+        "what did you study",
+        "which college",
+        "graduation"
+      ],
+      "keywords": [
+        "education",
+        "academic",
+        "study",
+        "studied",
+        "degree",
+        "college",
+        "university",
+        "graduate",
+        "graduation",
+        "btech",
+        "electrical",
+        "2021"
+      ],
+      "answer": "I completed a Bachelor of Technology in Electrical Engineering from Government Engineering College, Bikaner, affiliated with Rajasthan Technical University. I studied from 2017 to 2021. Although my degree is in electrical engineering, the analytical and troubleshooting approach I developed there has been useful in my transition to data science and AI."
+    },
+    "career_transition": {
+      "question_patterns": [
+        "why did you change careers",
+        "transition from electrical engineering",
+        "move into data science",
+        "career change"
+      ],
+      "keywords": [
+        "transition",
+        "change",
+        "electrical",
+        "engineering",
+        "data science",
+        "career",
+        "switch",
+        "move",
+        "field"
+      ],
+      "answer": "My electrical engineering education and early service-engineering work trained me to approach problems systematically. Over time, I became more interested in working with data, automation, and intelligent software, so I developed my data science skills through structured learning and practical projects. My internship at Ai Variant helped me apply machine learning and NLP, and I continued building on that foundation through AI projects and professional work."
+    },
+    "why_ai": {
+      "question_patterns": [
+        "why artificial intelligence",
+        "why ai",
+        "why machine learning",
+        "why genai"
+      ],
+      "keywords": [
+        "why",
+        "artificial intelligence",
+        "ai",
+        "machine learning",
+        "genai",
+        "generative",
+        "interest",
+        "motivation"
+      ],
+      "answer": "I am interested in AI because it can turn information and repetitive processes into useful products and workflows. I particularly enjoy practical applications such as document question answering, prediction systems, automation, and AI-powered assistants. I prefer building a working solution around a real problem rather than using a model only as a demonstration."
+    },
+    "current_work": {
+      "question_patterns": [
+        "current role",
+        "what are you doing currently",
+        "what do you do now",
+        "current employment",
+        "what are you working on"
+      ],
+      "keywords": [
+        "current",
+        "currently",
+        "now",
+        "role",
+        "working",
+        "freelance",
+        "self-employed",
+        "project",
+        "employment"
+      ],
+      "answer": "I am currently working as a freelance AI and Data Science Engineer. I am developing a confidential e-commerce and product-catalogue platform for a jewellery business as a solo freelance developer, while also improving my AI portfolio through independent projects. My work includes Python and AI-related development as well as project-level backend and database integration."
+    },
+    "freelance_ecommerce": {
+      "question_patterns": [
+        "ecommerce project",
+        "jewellery platform",
+        "client project",
+        "freelance project",
+        "product catalogue project"
+      ],
+      "keywords": [
+        "ecommerce",
+        "e-commerce",
+        "jewellery",
+        "jewelry",
+        "client",
+        "catalogue",
+        "catalog",
+        "storefront",
+        "orders",
+        "inventory",
+        "freelance",
+        "admin"
+      ],
+      "answer": "I am working as a solo freelance developer on a client e-commerce and product-catalogue platform for a jewellery business. The solution includes a customer-facing storefront and an admin system for products, orders, promotional codes, and catalogue operations. The project also involves PostgreSQL-backed data workflows, protected admin APIs, order and inventory handling, image uploads, and debugging integration issues. The client engagement is confidential, so I do not share its source code or private repository."
+    },
+    "ai_news_automation": {
+      "question_patterns": [
+        "ai news automation",
+        "newsletter automation",
+        "linkedin publishing automation",
+        "automated news workflow"
+      ],
+      "keywords": [
+        "news",
+        "automation",
+        "newsletter",
+        "gmail",
+        "make",
+        "openrouter",
+        "linkedin",
+        "publishing",
+        "schedule",
+        "deduplication"
+      ],
+      "answer": "I built an AI news aggregation and LinkedIn publishing workflow using Make, Gmail, OpenRouter, and LinkedIn integrations. It processes newsletter emails, extracts relevant AI stories, filters promotions and irrelevant items, removes duplicate coverage, selects important developments, generates a concise post, validates the content, and publishes it on a schedule when relevant material is available. This project gave me practical exposure to workflow automation, API integrations, LLM prompting, validation, and fallback handling. Some of the workflow-tool integration was implemented with AI assistance, so I describe it as project experience rather than claiming deep expertise in every platform."
+    },
+    "brainhap_role": {
+      "question_patterns": [
+        "brainhap",
+        "experience at brainhap",
+        "what did you do at brainhap",
+        "responsibilities at brainhap"
+      ],
+      "keywords": [
+        "brainhap",
+        "learning cart",
+        "internal",
+        "workflow",
+        "reporting",
+        "attendance",
+        "task management",
+        "rag",
+        "fastapi",
+        "november",
+        "2025"
+      ],
+      "answer": "I worked as an AI and Data Science Engineer at BrainHap from November 2025 to May 15, 2026. I built internal AI-powered workflow automation tools for reporting, task management, and attendance using Python and FastAPI. I also developed RAG-based document search and knowledge-assistant solutions using LangChain, Hugging Face embeddings, and FAISS, and integrated LLM features into internal APIs and business workflows. I collaborated with product and business stakeholders to turn requirements and feedback into working prototypes."
+    },
+    "ai_variant_role": {
+      "question_patterns": [
+        "ai variant",
+        "data science internship",
+        "internship experience",
+        "what did you do as an intern"
+      ],
+      "keywords": [
+        "ai variant",
+        "intern",
+        "internship",
+        "book recommender",
+        "resume analyzer",
+        "cluster analyzer",
+        "nlp",
+        "machine learning"
+      ],
+      "answer": "I worked as a remote Data Science Intern at Ai Variant from February to November 2023. I worked on projects including a book recommender using collaborative and content-based filtering, an NLP-based resume parser, and clustering analysis using K-Means, hierarchical clustering, and DBSCAN. The internship helped me apply Python, NLP, data preprocessing, and machine-learning concepts to practical datasets."
+    },
+    "biomedical_experience": {
+      "question_patterns": [
+        "biomedical engineer",
+        "apollo hospitals",
+        "sindoori management",
+        "healthcare experience"
+      ],
+      "keywords": [
+        "biomedical",
+        "engineer",
+        "sindoori",
+        "apollo",
+        "hospital",
+        "healthcare",
+        "equipment",
+        "medical"
+      ],
+      "answer": "I worked as a Biomedical Engineer with Sindoori Management Solutions at Indraprastha Apollo Hospitals from June 2024 to June 2025. This role gave me experience in a healthcare environment and strengthened my discipline around technical operations, troubleshooting, and working with equipment-related requirements. It also helped me understand how important reliability and clear communication are in operational settings."
+    },
+    "service_engineer": {
+      "question_patterns": [
+        "service engineer",
+        "kirloskar",
+        "first job",
+        "early career experience"
+      ],
+      "keywords": [
+        "service",
+        "engineer",
+        "kirloskar",
+        "technologies",
+        "troubleshooting",
+        "field",
+        "maintenance"
+      ],
+      "answer": "I worked as a Service Engineer at Kirloskar Technologies Pvt. Ltd. from September 2021 to January 2023. The role taught me to investigate practical problems systematically, understand issues in real operating environments, and communicate clearly while troubleshooting. Those habits continue to influence how I approach software and AI problems."
+    },
+    "upwork_freelance": {
+      "question_patterns": [
+        "upwork",
+        "freelance engineer experience",
+        "sentiment trend reader client",
+        "freelance work before brainhap"
+      ],
+      "keywords": [
+        "upwork",
+        "freelance",
+        "client",
+        "sentiment",
+        "trend",
+        "reader",
+        "google trends",
+        "2025"
+      ],
+      "answer": "I worked as a Freelance AI Engineer on Upwork from August to November 2025. One project was a Sentiment Trend Reader dashboard for a private client. It gathered trending keywords, performed sentiment analysis, and presented related news coverage to help understand sentiment around selected topics. I keep private-client details confidential."
+    },
+    "project_portfolio": {
+      "question_patterns": [
+        "projects",
+        "what have you built",
+        "what have you developed",
+        "portfolio",
+        "walk me through your projects"
+      ],
+      "keywords": [
+        "projects",
+        "built",
+        "developed",
+        "created",
+        "portfolio",
+        "work",
+        "application",
+        "system",
+        "engine",
+        "assistant",
+        "automation",
+        "chatbot",
+        "classifier"
+      ],
+      "answer": "My project work includes the Renewal Intelligence Engine, RAG-based document assistants, facial and audio emotion analysis applications, an AI news automation workflow, an AI apparel design tool, and a sentiment analysis dashboard. I have also worked on data science projects such as book recommendation, resume parsing, clustering, SQL sales analysis, and web scraping. My current freelance work includes a confidential jewellery e-commerce platform. Public project repositories are available on my GitHub profile: https://github.com/ShishupalRajpurohit."
+    },
+    "renewal_engine": {
+      "question_patterns": [
+        "renewal intelligence engine",
+        "churn prediction project",
+        "customer renewal risk",
+        "explain renewal project"
+      ],
+      "keywords": [
+        "renewal",
+        "intelligence",
+        "engine",
+        "churn",
+        "risk",
+        "prediction",
+        "random forest",
+        "csm",
+        "nps",
+        "usage",
+        "fastapi"
+      ],
+      "answer": "The Renewal Intelligence Engine is an AI-powered customer renewal-risk analysis system. It combines structured signals such as account details, product usage, NPS, and support tickets with business signals extracted from unstructured Customer Success notes using an LLM. I used feature engineering and a Random Forest classifier for risk scoring, with fuzzy matching to reconcile inconsistent account references; the application is presented through a FastAPI backend and Streamlit dashboard. Public repository: https://github.com/ShishupalRajpurohit/renewal_intelligence_engine."
+    },
+    "rag_assistant": {
+      "question_patterns": [
+        "rag assistant",
+        "document question answering",
+        "pdf question answering",
+        "how did you build a rag system"
+      ],
+      "keywords": [
+        "rag",
+        "assistant",
+        "document",
+        "pdf",
+        "question",
+        "answering",
+        "langchain",
+        "faiss",
+        "embeddings",
+        "retrieval"
+      ],
+      "answer": "My RAG assistant lets a user ask questions about supplied documents instead of relying only on a model's general knowledge. The typical flow is to extract and split document text into chunks, create embeddings, store them in FAISS, retrieve the most relevant chunks for a question, and pass that context to an LLM to generate a grounded response. I have used Python, LangChain, FAISS, Hugging Face embeddings, and Streamlit or API-based interfaces in these projects."
+    },
+    "bme_bot": {
+      "question_patterns": [
+        "bme bot",
+        "biomedical chatbot",
+        "medical equipment chatbot",
+        "biomedical manuals assistant"
+      ],
+      "keywords": [
+        "bme",
+        "bot",
+        "biomedical",
+        "medical",
+        "equipment",
+        "manuals",
+        "repair",
+        "troubleshooting",
+        "langchain",
+        "groq",
+        "faiss"
+      ],
+      "answer": "BME Bot is a biomedical engineering assistant that answers questions using technical PDFs such as medical-equipment manuals and repair guides. It uses a RAG pipeline with LangChain, FAISS, Hugging Face embeddings, and a Groq-hosted LLM, with a Streamlit interface. The project also includes PDF processing with OCR fallback, technical and casual modes, logging, and tests. Public repository: https://github.com/ShishupalRajpurohit/BME_Bot."
+    },
+    "multipurpose_chatbot": {
+      "question_patterns": [
+        "multipurpose chatbot",
+        "multi-domain chatbot",
+        "chatbot project",
+        "document assistant project"
+      ],
+      "keywords": [
+        "multipurpose",
+        "chatbot",
+        "multi-domain",
+        "domain",
+        "document",
+        "pdf",
+        "semantic",
+        "search",
+        "flask",
+        "chainlit",
+        "postgresql"
+      ],
+      "answer": "The Multipurpose Chatbot evolved from a biomedical document assistant into a multi-domain document-question-answering concept. Its core idea is to ingest PDFs, create embeddings, retrieve relevant passages through FAISS, and generate answers with an LLM. The project description also includes interface and integration experiments with Flask, Chainlit, and PostgreSQL; I used AI assistance for several of those supporting technologies, so I would not present them as my strongest independent skills. Public repository: https://github.com/ShishupalRajpurohit/multipurpose-chatbot."
+    },
+    "swiggy_rag": {
+      "question_patterns": [
+        "swiggy rag chatbot",
+        "annual report rag",
+        "swiggy annual report project"
+      ],
+      "keywords": [
+        "swiggy",
+        "annual",
+        "report",
+        "rag",
+        "chatbot",
+        "faiss",
+        "groq",
+        "pymupdf"
+      ],
+      "answer": "The Swiggy Annual Report RAG project answers questions using retrieved context from Swiggy Limited's FY 2023–24 annual report. The flow uses document processing, embeddings, FAISS similarity search, relevant text chunks, and a Groq-hosted LLM to generate context-grounded answers. The documented version is a command-line application rather than a full user interface. Public repository: https://github.com/ShishupalRajpurohit/Swiggy_rag_chatbot."
+    },
+    "facial_emotion_detector": {
+      "question_patterns": [
+        "facial emotion detector",
+        "face emotion project",
+        "emotion recognition from images",
+        "webcam emotion detection"
+      ],
+      "keywords": [
+        "facial",
+        "face",
+        "emotion",
+        "detector",
+        "recognition",
+        "webcam",
+        "mediapipe",
+        "fastapi",
+        "websocket",
+        "hugging",
+        "groq"
+      ],
+      "answer": "Facial Emotion Detector Pro analyzes facial expressions from webcam frames or uploaded images and returns emotion predictions with confidence information. The project uses a FastAPI backend, MediaPipe for face-related processing, and external model providers such as Hugging Face, Groq, and OpenRouter, with REST and WebSocket interfaces. Docker and deployment-related components were used with AI assistance, so I describe those as implementation exposure rather than independent DevOps expertise. Public repository: https://github.com/ShishupalRajpurohit/Face_emotion_detector."
+    },
+    "audio_emotion_classifier": {
+      "question_patterns": [
+        "audio emotion classifier",
+        "speech emotion recognition",
+        "emotion from voice",
+        "speaker diarization project"
+      ],
+      "keywords": [
+        "audio",
+        "emotion",
+        "classifier",
+        "speech",
+        "voice",
+        "segmentation",
+        "speaker",
+        "diarization",
+        "webrtc",
+        "librosa",
+        "whisper"
+      ],
+      "answer": "Audio Emotion Classifier Pro is an API-oriented project for analyzing emotion in speech. It accepts audio, uses external audio or language-model providers for transcription and emotion analysis, organizes results into time-based segments, and can return speaker-labelled timelines with confidence information. Its documented stack includes FastAPI, WebRTC, WebSocket, Librosa, Hugging Face, Groq Whisper, and OpenRouter; several supporting integrations were implemented with AI assistance. Public repository: https://github.com/ShishupalRajpurohit/audio_emotion_classifier."
+    },
+    "sentiment_trend_reader": {
+      "question_patterns": [
+        "sentiment trend reader",
+        "trend sentiment dashboard",
+        "market sentiment project"
+      ],
+      "keywords": [
+        "sentiment",
+        "trend",
+        "reader",
+        "google trends",
+        "reddit",
+        "twitter",
+        "youtube",
+        "news",
+        "textblob",
+        "dashboard"
+      ],
+      "answer": "Sentiment Trend Reader was developed to explore public sentiment around trending topics. The workflow gathers trending keywords, collects related discussions or news from multiple sources, applies sentiment analysis, and presents the results in a dashboard. The profile describes the use of Python, Pandas, TextBlob, data-extraction tools, and visualization; the work was delivered for a private client, so I do not share any confidential client information."
+    },
+    "ai_apparel_design": {
+      "question_patterns": [
+        "ai apparel design system",
+        "apparel mockup generator",
+        "fashion image generation project"
+      ],
+      "keywords": [
+        "apparel",
+        "design",
+        "fashion",
+        "mockup",
+        "image",
+        "generation",
+        "hugging face",
+        "streamlit",
+        "pyinstaller"
+      ],
+      "answer": "The AI Apparel Design System is a generative design tool for creating apparel mockups from prompt templates. It uses a Streamlit interface and Hugging Face image-generation APIs, with reusable prompts for different garment types and utility logic for validating and saving generated outputs. The project was intended to make mockup generation easier for non-technical users; integrations and packaging beyond my core Python work were completed with AI assistance."
+    },
+    "book_recommender": {
+      "question_patterns": [
+        "book recommender",
+        "recommendation system",
+        "recommend books",
+        "collaborative filtering project"
+      ],
+      "keywords": [
+        "book",
+        "recommender",
+        "recommendation",
+        "collaborative",
+        "content-based",
+        "filtering",
+        "nlp",
+        "books"
+      ],
+      "answer": "The Book Recommender System suggests books using popularity-based, collaborative-filtering, and content-based recommendation approaches. The project involved data preparation and recommendation logic, with Python and NLP libraries such as NLTK and spaCy listed in the project experience. Public repository: https://github.com/ShishupalRajpurohit/Book-Recommender-System."
+    },
+    "resume_analyzer": {
+      "question_patterns": [
+        "resume analyzer",
+        "resume parser",
+        "resume parsing project",
+        "candidate screening project"
+      ],
+      "keywords": [
+        "resume",
+        "analyzer",
+        "parser",
+        "parsing",
+        "candidate",
+        "skills",
+        "entity",
+        "extraction",
+        "nlp",
+        "recruitment"
+      ],
+      "answer": "The Resume Analyzer/Parser is an NLP project that extracts structured information from unstructured resumes. It focuses on identifying details such as skills, education, experience, and other candidate information from PDF, DOCX, or text documents, so the data can be reviewed more consistently. Public repository: https://github.com/ShishupalRajpurohit/Resume-Analyzer-Parser."
+    },
+    "cluster_analyzer": {
+      "question_patterns": [
+        "cluster analyzer",
+        "clustering project",
+        "unsupervised learning project",
+        "global development indicators"
+      ],
+      "keywords": [
+        "cluster",
+        "analyzer",
+        "clustering",
+        "unsupervised",
+        "k-means",
+        "hierarchical",
+        "dbscan",
+        "indicators",
+        "countries"
+      ],
+      "answer": "Cluster Analyzer applies unsupervised learning to global development indicators to explore similarities between countries. I used or compared K-Means, hierarchical clustering, and DBSCAN, then examined the resulting groups through visualizations and cluster evaluation. The project helped me understand how different clustering methods behave on multidimensional datasets. Public repository: https://github.com/ShishupalRajpurohit/Cluster-Analyzer."
+    },
+    "walmart_sql": {
+      "question_patterns": [
+        "walmart sql project",
+        "sales analysis project",
+        "mysql analysis",
+        "sql data analysis"
+      ],
+      "keywords": [
+        "walmart",
+        "sales",
+        "analysis",
+        "mysql",
+        "sql",
+        "revenue",
+        "branch",
+        "product",
+        "customer",
+        "margin"
+      ],
+      "answer": "The Walmart Sales Data Analysis project uses MySQL to explore sales trends, product performance, branch-level results, and customer behaviour. The work includes data cleaning and feature preparation, time-based analysis, and calculations such as revenue, gross margin, and VAT. It gave me practical experience writing SQL queries to answer business questions from structured data. Public repository: https://github.com/ShishupalRajpurohit/Walmart-Data-Analysis-by-MySQL."
+    },
+    "web_scraping": {
+      "question_patterns": [
+        "web scraping project",
+        "nse data scraping",
+        "web scrapping project",
+        "data extraction project"
+      ],
+      "keywords": [
+        "web",
+        "scraping",
+        "scrapping",
+        "nse",
+        "requests",
+        "beautifulsoup",
+        "html",
+        "data extraction",
+        "nifty"
+      ],
+      "answer": "My Web Scrapping project demonstrates how to retrieve web pages and extract structured information from HTML. It uses Python requests for HTTP calls and BeautifulSoup for parsing, including examples involving Nifty 50-related data. Public repository: https://github.com/ShishupalRajpurohit/Web-Scrapping."
+    },
+    "yt_downloader": {
+      "question_patterns": [
+        "youtube downloader",
+        "yt downloader",
+        "desktop downloader project"
+      ],
+      "keywords": [
+        "youtube",
+        "downloader",
+        "yt-dlp",
+        "customtkinter",
+        "ffmpeg",
+        "playlist",
+        "mp3",
+        "desktop"
+      ],
+      "answer": "YT Downloader is a lightweight Windows desktop utility built with Python, CustomTkinter, and yt-dlp. It supports video and audio-only downloads, selectable quality, playlists, a custom download folder, progress information, and FFmpeg-based audio/video processing. I describe it as a learning and utility project, not as a production-grade product, and it should only be used for content the user has the right to download. Public repository: https://github.com/ShishupalRajpurohit/YT-Downloader."
+    },
+    "python_skill": {
+      "question_patterns": [
+        "python skills",
+        "how strong are you in python",
+        "python proficiency",
+        "experience with python"
+      ],
+      "keywords": [
+        "python",
+        "programming",
+        "proficiency",
+        "coding",
+        "language",
+        "experience",
+        "skill"
+      ],
+      "answer": "Python is my primary programming language and the main tool I use for data science and AI projects. I have used it for data processing, machine-learning workflows, NLP, automation, RAG applications, and backend API work. I would describe my level as practical and developing: I can work on project tasks, while continuing to strengthen deeper software-engineering concepts and independent problem-solving."
+    },
+    "fastapi_skill": {
+      "question_patterns": [
+        "fastapi experience",
+        "what is your experience with fastapi",
+        "how have you used fastapi"
+      ],
+      "keywords": [
+        "fastapi",
+        "api",
+        "backend",
+        "framework",
+        "endpoint",
+        "request",
+        "response"
+      ],
+      "answer": "I have used FastAPI to build backend endpoints and connect AI or machine-learning functionality to applications. For example, I used it in the Renewal Intelligence Engine and in AI workflow or emotion-analysis prototypes. My experience is practical and foundational rather than advanced, and I am continuing to improve my API design, validation, error handling, and testing skills."
+    },
+    "machine_learning_skill": {
+      "question_patterns": [
+        "machine learning experience",
+        "which ml algorithms have you used",
+        "explain your machine learning skills"
+      ],
+      "keywords": [
+        "machine",
+        "learning",
+        "algorithm",
+        "random forest",
+        "k-means",
+        "dbscan",
+        "clustering",
+        "regression",
+        "classification"
+      ],
+      "answer": "My machine-learning experience comes from applied projects. I have used Random Forest for renewal-risk classification and K-Means, hierarchical clustering, and DBSCAN for unsupervised analysis; I have also explored collaborative and content-based recommendation methods. I focus on understanding the business problem, preparing the data, selecting a suitable approach, and interpreting the output rather than claiming research-level expertise."
+    },
+    "rag_concept": {
+      "question_patterns": [
+        "what is rag",
+        "explain retrieval augmented generation",
+        "how does rag work",
+        "why use rag"
+      ],
+      "keywords": [
+        "rag",
+        "retrieval",
+        "augmented",
+        "generation",
+        "knowledge",
+        "documents",
+        "hallucination",
+        "context"
+      ],
+      "answer": "RAG stands for Retrieval-Augmented Generation. First, the system processes a knowledge source, splits it into searchable chunks, and converts those chunks into embeddings. When a user asks a question, the retriever finds the most relevant chunks and provides them as context to the language model, which then generates an answer grounded in that information. This is useful when answers need to reflect specific documents or frequently updated knowledge."
+    },
+    "llm_concept": {
+      "question_patterns": [
+        "what is an llm",
+        "explain large language models",
+        "how do you use llms"
+      ],
+      "keywords": [
+        "llm",
+        "large",
+        "language",
+        "model",
+        "generative",
+        "groq",
+        "openrouter",
+        "prompt"
+      ],
+      "answer": "A Large Language Model is a model trained to understand and generate text based on patterns learned from large amounts of data. In my projects, I have used hosted LLM APIs for tasks such as extracting signals from customer notes, answering questions from retrieved documents, summarizing news, and interpreting text. I treat the model as one component in a larger application and add suitable prompts, context, validation, and error handling around it."
+    },
+    "vector_database": {
+      "question_patterns": [
+        "what is faiss",
+        "why did you use faiss",
+        "what is a vector database"
+      ],
+      "keywords": [
+        "faiss",
+        "vector",
+        "database",
+        "similarity",
+        "search",
+        "embedding",
+        "retrieval"
+      ],
+      "answer": "FAISS is a library for efficient similarity search over vectors. In my RAG projects, text chunks are converted into embeddings and stored in a FAISS index; a question is also embedded so the system can retrieve semantically similar chunks. I have used FAISS because it provides a straightforward way to add vector-based retrieval to Python document assistants."
+    },
+    "embeddings_concept": {
+      "question_patterns": [
+        "what are embeddings",
+        "how do embeddings work",
+        "why use hugging face embeddings"
+      ],
+      "keywords": [
+        "embedding",
+        "embeddings",
+        "vector",
+        "semantic",
+        "hugging face",
+        "similarity",
+        "text"
+      ],
+      "answer": "An embedding represents text or another input as a numerical vector that captures useful semantic information. Text with related meaning can be close to one another in vector space, which makes semantic retrieval possible even when the wording is different. In my document assistants, Hugging Face embedding models are used to represent document chunks and user questions before similarity search in FAISS."
+    },
+    "postgresql_skill": {
+      "question_patterns": [
+        "postgresql experience",
+        "how have you used postgres",
+        "database experience in your freelance project"
+      ],
+      "keywords": [
+        "postgresql",
+        "postgres",
+        "database",
+        "sql",
+        "ecommerce",
+        "orders",
+        "products",
+        "inventory"
+      ],
+      "answer": "I have used PostgreSQL in the context of my current freelance e-commerce project, where the application needs to persist catalogue, product, order, and related operational data. I can discuss how the database supports the application's workflows, but I would not describe myself as a database administrator or advanced database specialist. My strongest technical foundation remains Python and applied AI development."
+    },
+    "mysql_skill": {
+      "question_patterns": [
+        "mysql experience",
+        "how have you used mysql",
+        "sql experience"
+      ],
+      "keywords": [
+        "mysql",
+        "sql",
+        "query",
+        "database",
+        "walmart",
+        "analysis"
+      ],
+      "answer": "I have used MySQL in a data-analysis project focused on Walmart sales data. I wrote queries to examine sales, product and branch performance, customer patterns, and time-based trends, along with calculations such as revenue and margin. My SQL experience is project-based, and I am refreshing and strengthening it further."
+    },
+    "ai_assisted_development": {
+      "question_patterns": [
+        "do you use ai to code",
+        "how do you use ai tools",
+        "did you build everything yourself",
+        "are you proficient in docker typescript"
+      ],
+      "keywords": [
+        "ai",
+        "assistance",
+        "assisted",
+        "coding",
+        "tools",
+        "independently",
+        "docker",
+        "typescript",
+        "fastify",
+        "websocket",
+        "webrtc",
+        "flask",
+        "chainlit",
+        "make"
+      ],
+      "answer": "I use AI tools to accelerate learning, explore implementation options, and help with unfamiliar integrations. I do not present every technology that appears in a project stack as an independent strength. Python and my applied AI work are my primary areas; for technologies such as TypeScript, Fastify, Docker, WebSocket, WebRTC, Flask, Chainlit, and Make, I have project exposure and used AI assistance during implementation. I still need to review, test, and understand the resulting code, and I am continuing to build more independent depth."
+    },
+    "api_concept": {
+      "question_patterns": [
+        "what is a rest api",
+        "how do you design an api",
+        "explain api integration"
+      ],
+      "keywords": [
+        "api",
+        "rest",
+        "endpoint",
+        "http",
+        "request",
+        "response",
+        "integration",
+        "backend"
+      ],
+      "answer": "A REST API exposes application functionality through HTTP endpoints and standard request and response formats. In my projects, I have used backend APIs to connect user interfaces with prediction, document retrieval, and other AI functionality. When working on an endpoint, I consider its purpose, input validation, response structure, error cases, and how the frontend or another service will consume it."
+    },
+    "problem_solving": {
+      "question_patterns": [
+        "how do you solve problems",
+        "problem solving approach",
+        "how do you debug issues"
+      ],
+      "keywords": [
+        "problem",
+        "solve",
+        "debug",
+        "approach",
+        "troubleshoot",
+        "issue",
+        "systematic",
+        "root cause"
+      ],
+      "answer": "I start by clarifying the expected behaviour and reproducing the issue with a small example. Then I break the problem into components, inspect the inputs and outputs, check logs or error messages, and test one change at a time. I use documentation and AI tools when useful, but I verify the proposed solution rather than accepting it without testing."
+    },
+    "strengths": {
+      "question_patterns": [
+        "greatest strength",
+        "superpower",
+        "what are you good at",
+        "strongest skill"
+      ],
+      "keywords": [
+        "strength",
+        "superpower",
+        "good",
+        "strongest",
+        "skill",
+        "ability",
+        "problem-solving",
+        "adapt",
+        "prototype"
+      ],
+      "answer": "One of my strengths is turning an unclear requirement into a practical first version. I break the problem into manageable steps, use the tools that fit the task, and test whether the result actually solves the need. I am also comfortable learning new concepts while building, and I try to be transparent about what is prototype-level and what is production-ready."
     },
     "growth_areas": {
       "question_patterns": [
-        "top\\s*3",
-        "three areas",
-        "growth areas",
-        "areas.*grow",
-        "improve.*areas"
+        "top 3 growth areas",
+        "three areas to improve",
+        "what are your weaknesses",
+        "areas you are working to improve"
       ],
-      "keywords": ["growth", "areas", "improve", "improvement", "weakness", "weaknesses", "develop", "better", "learn", "top", "three", "3", "lack", "gap", "shortcoming", "challenge", "difficult", "hard", "struggle", "weak", "improve", "improving", "development"],
-      "answer": "The top three areas I want to improve are software engineering fundamentals, production reliability, and explaining technical trade-offs clearly. I want to become more independent at writing maintainable code, get better at testing failure cases, and explain why a solution fits the actual problem. I treat these as ongoing areas of practice."
+      "keywords": [
+        "growth",
+        "areas",
+        "improve",
+        "weakness",
+        "develop",
+        "better",
+        "learn",
+        "three",
+        "3",
+        "gap",
+        "challenge"
+      ],
+      "answer": "The three areas I am actively improving are software-engineering fundamentals, production reliability, and explaining technical trade-offs clearly. I want to become more independent at writing maintainable code, testing edge cases, and making design decisions. I work on these areas through project practice, documentation, and reviewing what I build."
+    },
+    "challenge": {
+      "question_patterns": [
+        "tell me about a challenge",
+        "difficult project",
+        "biggest technical challenge"
+      ],
+      "keywords": [
+        "challenge",
+        "difficult",
+        "technical",
+        "project",
+        "issue",
+        "obstacle",
+        "solution"
+      ],
+      "answer": "A recurring challenge in my AI projects is making outputs useful and reliable when the input data is inconsistent or unstructured. For example, in the Renewal Intelligence Engine, customer notes could refer to accounts in inconsistent ways, so the workflow needed extraction and entity reconciliation before the prediction stage. I addressed the problem by combining LLM-based signal extraction with fuzzy matching and a structured feature pipeline."
+    },
+    "failure_learning": {
+      "question_patterns": [
+        "tell me about a failure",
+        "mistake you made",
+        "something that did not work",
+        "lesson learned"
+      ],
+      "keywords": [
+        "failure",
+        "mistake",
+        "lesson",
+        "learned",
+        "did not work",
+        "error",
+        "improve"
+      ],
+      "answer": "One lesson I have learned from building prototypes is that a feature working in a happy-path demonstration does not mean the whole application is reliable. Integrations can fail because of unexpected inputs, provider limits, network errors, or configuration differences. I now try to test edge cases, handle failures explicitly, and separate a working prototype from a production-ready system."
+    },
+    "ai_quality": {
+      "question_patterns": [
+        "how do you make ai applications reliable",
+        "how do you reduce hallucinations",
+        "how do you validate llm output"
+      ],
+      "keywords": [
+        "reliability",
+        "hallucination",
+        "validate",
+        "validation",
+        "testing",
+        "llm",
+        "output",
+        "context",
+        "quality"
+      ],
+      "answer": "I try to constrain an AI feature to the information and task it is intended to handle. For document question answering, I retrieve relevant source passages and instruct the model to answer from that context; I also consider what the application should do when evidence is missing. I validate structured outputs where possible and test failure cases instead of assuming that a fluent response is always correct."
+    },
+    "why_hire": {
+      "question_patterns": [
+        "why should we hire you",
+        "what makes you a good fit",
+        "why are you suitable"
+      ],
+      "keywords": [
+        "hire",
+        "fit",
+        "suitable",
+        "value",
+        "contribute",
+        "strength",
+        "role",
+        "team"
+      ],
+      "answer": "You should consider me for a role that needs practical Python, data-science, or applied-AI development. I have worked on projects involving machine learning, RAG, LLM integrations, document processing, and backend APIs, and I bring a systematic troubleshooting approach from my earlier engineering roles. I am also honest about my current skill depth and actively work to improve the areas where I need more experience."
+    },
+    "career_goals": {
+      "question_patterns": [
+        "where do you see yourself",
+        "career goals",
+        "what are your long term goals"
+      ],
+      "keywords": [
+        "career",
+        "goal",
+        "future",
+        "long-term",
+        "long term",
+        "growth",
+        "aspiration"
+      ],
+      "answer": "My goal is to grow into a stronger AI and software engineer who can take a practical AI feature from problem definition through implementation, testing, and deployment. I want to deepen my Python and backend engineering fundamentals while continuing to work with machine learning, LLMs, and RAG. Over time, I want to take greater ownership of reliable end-to-end solutions."
+    },
+    "learning_new_technology": {
+      "question_patterns": [
+        "how do you learn new technologies",
+        "how do you stay updated",
+        "how do you push your limits"
+      ],
+      "keywords": [
+        "learn",
+        "learning",
+        "new",
+        "technology",
+        "documentation",
+        "practice",
+        "limits",
+        "stay updated"
+      ],
+      "answer": "I learn a new technology by first understanding the problem it is meant to solve, then following its documentation and building a small working example. I use AI tools to clarify unfamiliar concepts or accelerate setup, but I verify the code, test it, and try to understand the important decisions. I prefer learning through a concrete project rather than memorizing features without context."
+    },
+    "teamwork": {
+      "question_patterns": [
+        "teamwork experience",
+        "how do you work with a team",
+        "collaboration with stakeholders"
+      ],
+      "keywords": [
+        "team",
+        "teamwork",
+        "collaboration",
+        "stakeholder",
+        "product",
+        "business",
+        "feedback",
+        "communication"
+      ],
+      "answer": "At BrainHap, I worked with product and business stakeholders to understand requirements and turn feedback into working AI prototypes. I try to make the problem, assumptions, progress, and limitations clear so that technical and non-technical people can align. In freelance work, I also keep the scope and client-facing details clear while working independently on implementation."
+    },
+    "communication": {
+      "question_patterns": [
+        "how do you explain technical topics",
+        "communication skills",
+        "explain complex topics"
+      ],
+      "keywords": [
+        "communication",
+        "explain",
+        "technical",
+        "complex",
+        "simple",
+        "non-technical",
+        "stakeholder"
+      ],
+      "answer": "I try to explain technical topics by starting with the problem and the outcome, then describing the main components in plain language. For example, I explain a RAG system as a way to find relevant parts of a document and provide them to an LLM before it answers. I adjust the amount of detail depending on whether I am speaking with a developer, a business stakeholder, or an interviewer."
+    },
+    "deadlines": {
+      "question_patterns": [
+        "how do you manage deadlines",
+        "multiple tasks",
+        "time management"
+      ],
+      "keywords": [
+        "deadline",
+        "time",
+        "manage",
+        "prioritize",
+        "tasks",
+        "multiple",
+        "planning"
+      ],
+      "answer": "I start by identifying the required outcome and separating essential work from optional improvements. I break the work into smaller tasks, handle dependencies first, and share progress or blockers early. I also try to leave time for testing rather than using the entire schedule only for implementation."
+    },
+    "certifications": {
+      "question_patterns": [
+        "certifications",
+        "courses",
+        "what have you studied beyond college"
+      ],
+      "keywords": [
+        "certification",
+        "certificates",
+        "courses",
+        "great learning",
+        "excelr",
+        "udemy",
+        "tableau",
+        "sql"
+      ],
+      "answer": "My listed certifications and courses include Data Science and Machine Learning with Python from ExcelR, a Data Science Project Program from Ai Variant, SQL for Data Science and SQL Projects for Beginners from Great Learning, Data Visualization using Tableau, Face Detection with OpenCV in Python, and a Python course on Udemy. These courses supported my transition from engineering into data science and AI."
+    },
+    "location_availability": {
+      "question_patterns": [
+        "where are you based",
+        "which city are you in",
+        "when can you join",
+        "joining availability"
+      ],
+      "keywords": [
+        "location",
+        "based",
+        "mumbai",
+        "malad",
+        "join",
+        "joining",
+        "availability",
+        "notice",
+        "days"
+      ],
+      "answer": "I am based in Mumbai, Maharashtra, in the Malad East area. I can generally join within 15 days, depending on the final offer and onboarding requirements."
+    },
+    "compensation": {
+      "question_patterns": [
+        "current ctc",
+        "expected ctc",
+        "salary expectation",
+        "current salary"
+      ],
+      "keywords": [
+        "ctc",
+        "salary",
+        "compensation",
+        "expected",
+        "current",
+        "negotiable",
+        "freelance"
+      ],
+      "answer": "I do not have a fixed current CTC because I am currently working as a freelancer. My expected compensation is negotiable and would depend on the role, responsibilities, and overall opportunity."
+    },
+    "why_freelance": {
+      "question_patterns": [
+        "why are you freelancing",
+        "why freelance",
+        "why looking for a full time role"
+      ],
+      "keywords": [
+        "freelance",
+        "full-time",
+        "full time",
+        "employment",
+        "career",
+        "role",
+        "opportunity"
+      ],
+      "answer": "Freelancing has given me the opportunity to work on practical projects and take ownership of specific deliverables. I am also open to a full-time opportunity where I can collaborate with a team, strengthen my engineering fundamentals, and contribute consistently to real products."
     },
     "misconception": {
       "question_patterns": [
         "misconception",
-        "coworkers think",
-        "co-workers think",
-        "colleagues think"
+        "what do coworkers think",
+        "what do colleagues think"
       ],
-      "keywords": ["misconception", "coworkers", "colleagues", "think", "believe", "opinion", "perception", "misunderstand", "wrong", "assume", "assumption", "people", "team", "others", "view", "see", "judge", "coworker", "colleague"],
-      "answer": "I cannot confidently speak for what all my coworkers think, so I would not want to invent a misconception. When I am focused on solving something, people may see the implementation before they see all the checking and learning happening behind it. I try to make my assumptions and progress more visible as I work."
+      "keywords": [
+        "misconception",
+        "coworkers",
+        "colleagues",
+        "think",
+        "believe",
+        "opinion",
+        "perception",
+        "assume",
+        "team"
+      ],
+      "answer": "I cannot confidently speak for what all my coworkers or colleagues think, so I would not want to invent an opinion on their behalf. One thing I try to make clear is that when I use AI tools to accelerate implementation, I still need to review and test the result. I aim to communicate my actual contribution and the limits of my experience openly."
     },
     "boundaries": {
       "question_patterns": [
-        "push.*boundar",
-        "your limits",
+        "push your boundaries",
         "comfort zone",
-        "stretch yourself"
+        "how do you stretch yourself",
+        "go beyond your limits"
       ],
-      "keywords": ["push", "boundaries", "limits", "comfort", "zone", "stretch", "challenge", "grow", "limit", "boundary", "bound", "edge", "outside", "beyond", "extend", "reach", "expand", "learn new", "new skill", "challenge yourself", "push yourself", "limit"],
-      "answer": "I push my limits by choosing a concrete problem that is a little beyond what I already know and breaking it into smaller experiments. I use documentation and AI tools to speed up learning, but I still verify the output, test edge cases, and understand what I ship. That lets me explore new areas without pretending to know everything already."
+      "keywords": [
+        "push",
+        "boundaries",
+        "limits",
+        "comfort",
+        "zone",
+        "stretch",
+        "challenge",
+        "grow",
+        "outside",
+        "beyond"
+      ],
+      "answer": "I push myself by choosing a concrete problem that is slightly beyond what I already know and breaking it into smaller experiments. I use documentation and AI assistance to speed up learning, but I still verify the implementation, test edge cases, and understand the parts I deliver. That helps me explore new areas without overstating my expertise."
     },
-    "projects": {
+    "fallback_personal": {
       "question_patterns": [
-        "projects",
-        "what.*built",
-        "what.*made",
-        "portfolio",
-        "work.*done",
-        "accomplish"
+        "personal opinion",
+        "personal life",
+        "what do you feel",
+        "what is your favourite"
       ],
-      "keywords": ["projects", "built", "made", "created", "developed", "portfolio", "work", "accomplish", "project", "application", "app", "system", "engine", "assistant", "website", "ecommerce", "renewal", "intelligence", "rag", "churn"],
-      "answer": "I've worked on several projects: a Renewal Intelligence Engine with churn prediction using Random Forest and a RAG pipeline; a RAG assistant using Python, FastAPI, LangChain, FAISS, Hugging Face embeddings and Streamlit; and an e-commerce website project. These showcase my work with Python, LLMs, RAG, and machine learning."
+      "keywords": [
+        "personal",
+        "opinion",
+        "feel",
+        "favourite",
+        "favorite",
+        "family",
+        "hobby",
+        "private",
+        "belief"
+      ],
+      "answer": "I do not have a verified profile detail for that personal question, so I do not want to invent an answer on Shishupal's behalf. I can answer questions about his education, work experience, projects, technical skills, and professional approach using the available information."
+    },
+    "renewal_model_selection": {
+      "question_patterns": [
+        "why did you choose random forest",
+        "how did you select the model",
+        "which models did you compare"
+      ],
+      "keywords": [
+        "random forest",
+        "model",
+        "selection",
+        "logistic regression",
+        "decision tree",
+        "svm",
+        "gradient boosting",
+        "compare"
+      ],
+      "answer": "For the Renewal Intelligence Engine, I explored Logistic Regression, Decision Tree, Support Vector Machine, Gradient Boosting, and Random Forest. I selected Random Forest because it provided a practical balance for a relatively small dataset with mixed feature types and engineered business signals. It also supports probability estimates through predict_proba(), which helps identify borderline accounts for manual review. This was a project-level model choice, not a claim that Random Forest is always the best algorithm."
+    },
+    "model_evaluation_limitations": {
+      "question_patterns": [
+        "how did you evaluate the renewal model",
+        "what were the limitations of your churn model",
+        "was the model trained on real churn data",
+        "can you trust the accuracy"
+      ],
+      "keywords": [
+        "evaluation",
+        "limitations",
+        "accuracy",
+        "labels",
+        "historical",
+        "churn",
+        "renewal",
+        "risk_tier",
+        "deterministic",
+        "real outcomes"
+      ],
+      "answer": "An important limitation is that the project's training risk_tier labels were generated by a deterministic business rule, not taken from real historical churn outcomes. Therefore, a high evaluation score mainly shows that the model learned to reproduce the rule used to create the labels; it does not prove that it can accurately predict future customer churn. A production version should be trained and validated against actual renewal outcomes collected over time."
+    },
+    "missing_data_assumptions": {
+      "question_patterns": [
+        "how did you handle missing data",
+        "what did you do when nps was missing",
+        "how did you handle missing usage history"
+      ],
+      "keywords": [
+        "missing",
+        "data",
+        "nps",
+        "usage",
+        "neutral",
+        "assumption",
+        "imputation",
+        "history"
+      ],
+      "answer": "The Renewal Intelligence Engine uses explicit assumptions for missing information. A missing NPS response is assigned a neutral score of 7, rather than treating non-response as dissatisfaction. When historical usage is unavailable, the month-over-month API usage change is treated as 0%, meaning there is no evidence of a change. These are documented project assumptions and would need review against real business data before production use."
+    },
+    "silent_churn": {
+      "question_patterns": [
+        "what is silent churn",
+        "how do you identify silent churn risk",
+        "why can a satisfied customer still be at risk"
+      ],
+      "keywords": [
+        "silent",
+        "churn",
+        "usage",
+        "nps",
+        "satisfaction",
+        "declining",
+        "risk"
+      ],
+      "answer": "Silent churn refers to a situation where normal satisfaction indicators look positive while actual product engagement is declining. In the Renewal Intelligence Engine, an example is an account with a high NPS score but a noticeable drop in API usage. The purpose is to flag accounts that a dashboard based only on satisfaction scores might overlook."
+    },
+    "sdk_risk": {
+      "question_patterns": [
+        "what is silent sdk risk",
+        "how do you identify deprecated sdk risk",
+        "why did you use the changelog"
+      ],
+      "keywords": [
+        "sdk",
+        "deprecated",
+        "changelog",
+        "version",
+        "migration",
+        "risk"
+      ],
+      "answer": "The project checks customer SDK versions against product changelog information to identify accounts that may still depend on deprecated SDK versions. These customers can appear healthy based on usage or NPS, but they may face compatibility or migration issues later. The system surfaces them as a separate risk signal so a customer-success team can plan outreach or migration support."
+    },
+    "fuzzy_matching": {
+      "question_patterns": [
+        "why did you use fuzzy matching",
+        "how did you match inconsistent account names",
+        "what is fuzzy entity matching"
+      ],
+      "keywords": [
+        "fuzzy",
+        "matching",
+        "entity",
+        "account",
+        "names",
+        "spelling",
+        "inconsistent",
+        "reconcile"
+      ],
+      "answer": "Fuzzy entity matching helps reconcile references that are intended to identify the same account but are written differently. Customer notes may use an account name, an ID, an abbreviation, or a spelling variation, so exact matching can miss useful information. The project uses fuzzy matching as part of the data-enrichment process so extracted signals can be associated with the appropriate account; ambiguous matches should still be reviewed carefully."
+    },
+    "feature_engineering": {
+      "question_patterns": [
+        "what is feature engineering",
+        "how did you create features for renewal risk",
+        "what data went into the model"
+      ],
+      "keywords": [
+        "feature",
+        "engineering",
+        "features",
+        "usage",
+        "nps",
+        "support",
+        "tickets",
+        "customer",
+        "model"
+      ],
+      "answer": "Feature engineering means converting raw information into useful model inputs. In the Renewal Intelligence Engine, the inputs include structured customer information such as product usage, NPS responses, support activity, account details, and additional signals extracted from Customer Success notes. The goal is to combine different types of evidence into a unified feature table that a machine-learning model can use."
+    },
+    "random_forest_concept": {
+      "question_patterns": [
+        "what is random forest",
+        "explain random forest",
+        "why use an ensemble model"
+      ],
+      "keywords": [
+        "random",
+        "forest",
+        "ensemble",
+        "trees",
+        "classification",
+        "prediction",
+        "features"
+      ],
+      "answer": "Random Forest is an ensemble learning method that trains multiple decision trees and combines their predictions. For classification, the trees vote or contribute probabilities toward the final class estimate. It can model interactions between features and is often a useful baseline for structured tabular data, although its performance still depends on suitable data, validation, and problem design."
+    },
+    "supervised_unsupervised": {
+      "question_patterns": [
+        "difference between supervised and unsupervised learning",
+        "what is supervised learning",
+        "what is unsupervised learning"
+      ],
+      "keywords": [
+        "supervised",
+        "unsupervised",
+        "learning",
+        "labels",
+        "clustering",
+        "classification",
+        "regression"
+      ],
+      "answer": "Supervised learning uses labelled examples, where the expected output is known, to learn a mapping from inputs to outputs. Classification and regression are common supervised tasks. Unsupervised learning works with data that does not have a target label and looks for structure or groups; clustering methods such as K-Means and DBSCAN are examples I explored in the Cluster Analyzer project."
+    },
+    "classification_metrics": {
+      "question_patterns": [
+        "which metrics do you use for classification",
+        "explain precision recall f1",
+        "how do you measure a classifier"
+      ],
+      "keywords": [
+        "precision",
+        "recall",
+        "f1",
+        "classification",
+        "metrics",
+        "confusion",
+        "matrix",
+        "accuracy"
+      ],
+      "answer": "Accuracy is the proportion of all predictions that are correct, but it can be misleading when classes are imbalanced. Precision measures how many predicted positives are actually positive, while recall measures how many actual positives the model finds. The F1-score balances precision and recall. For a renewal-risk use case, the cost of missing an at-risk account may be different from the cost of flagging a healthy account, so the metric should reflect the business objective."
+    },
+    "overfitting": {
+      "question_patterns": [
+        "what is overfitting",
+        "how do you prevent overfitting",
+        "how can a model perform well but fail in production"
+      ],
+      "keywords": [
+        "overfitting",
+        "generalization",
+        "training",
+        "validation",
+        "test",
+        "model",
+        "performance"
+      ],
+      "answer": "Overfitting happens when a model learns patterns that work very well on its training data but do not generalize to new examples. I would check performance on data that was not used for fitting, use appropriate validation, compare training and validation results, and keep the model as simple as the problem allows. For time-dependent business problems, the validation approach should also respect the order of events and avoid information leakage."
+    },
+    "train_test_split": {
+      "question_patterns": [
+        "why split data into train and test sets",
+        "what is train test split",
+        "how do you validate a model"
+      ],
+      "keywords": [
+        "train",
+        "test",
+        "split",
+        "validation",
+        "dataset",
+        "model",
+        "generalization"
+      ],
+      "answer": "A train-test split separates data used to fit a model from data used to estimate how it performs on unseen examples. The training set is used to learn model parameters, while the test set is held back until evaluation. A separate validation set or cross-validation can be used for model selection and tuning, helping reduce the risk of choosing a model based only on training performance."
+    },
+    "python_collections": {
+      "question_patterns": [
+        "difference between list tuple set and dictionary",
+        "what are python data structures",
+        "list vs tuple"
+      ],
+      "keywords": [
+        "python",
+        "list",
+        "tuple",
+        "set",
+        "dictionary",
+        "dict",
+        "mutable",
+        "immutable"
+      ],
+      "answer": "A list is an ordered, mutable collection, so its contents can be changed after creation. A tuple is ordered but immutable, which makes it useful for fixed groups of values. A set stores unique elements and is useful for membership checks or removing duplicates. A dictionary stores key-value pairs and is useful when values need to be retrieved by a meaningful key."
+    },
+    "pandas_numpy": {
+      "question_patterns": [
+        "how have you used pandas and numpy",
+        "what is pandas used for",
+        "what is numpy used for"
+      ],
+      "keywords": [
+        "pandas",
+        "numpy",
+        "dataframe",
+        "array",
+        "data",
+        "processing",
+        "cleaning",
+        "numerical"
+      ],
+      "answer": "I have used Pandas for working with tabular data, including loading datasets, inspecting columns, cleaning values, transforming data, and preparing features for analysis or modelling. NumPy provides efficient numerical arrays and operations that support data processing and scientific computing. They are part of my Python data-science workflow, especially when preparing structured data for machine-learning projects."
+    },
+    "sql_joins": {
+      "question_patterns": [
+        "explain sql joins",
+        "inner join vs left join",
+        "how do you combine tables in sql"
+      ],
+      "keywords": [
+        "sql",
+        "join",
+        "inner",
+        "left",
+        "right",
+        "table",
+        "relational",
+        "combine"
+      ],
+      "answer": "A JOIN combines rows from two or more tables using a related column. An INNER JOIN returns rows with matching values in both tables, while a LEFT JOIN keeps every row from the left table and adds matching values from the right table when available. The choice depends on whether unmatched records should be excluded or preserved for analysis."
+    },
+    "parameterized_queries": {
+      "question_patterns": [
+        "how do you prevent sql injection",
+        "what are parameterized queries",
+        "how do you query a database safely"
+      ],
+      "keywords": [
+        "sql",
+        "injection",
+        "parameterized",
+        "parameters",
+        "security",
+        "query",
+        "database"
+      ],
+      "answer": "Parameterized queries keep SQL code separate from user-provided values. Instead of building a query by concatenating raw input into the SQL string, the application passes values through the database driver's parameter mechanism. This reduces SQL-injection risk and also makes query handling clearer and safer."
+    },
+    "fastapi_validation": {
+      "question_patterns": [
+        "how do you validate request data in fastapi",
+        "what is pydantic",
+        "how does fastapi handle request bodies"
+      ],
+      "keywords": [
+        "fastapi",
+        "pydantic",
+        "validation",
+        "request",
+        "body",
+        "schema",
+        "model"
+      ],
+      "answer": "FastAPI commonly uses Pydantic models to define and validate request and response data. A developer defines the expected fields and types in a model, then uses that model as an endpoint parameter. FastAPI validates incoming data and returns a structured validation error when the input does not match the expected schema. I have used FastAPI in project APIs and am continuing to deepen my understanding of its advanced patterns."
+    },
+    "http_status_codes": {
+      "question_patterns": [
+        "what does http 200 mean",
+        "what does http 201 mean",
+        "common http status codes",
+        "what status code for created"
+      ],
+      "keywords": [
+        "http",
+        "status",
+        "code",
+        "200",
+        "201",
+        "400",
+        "401",
+        "404",
+        "500",
+        "created",
+        "ok"
+      ],
+      "answer": "HTTP 200 means the request succeeded, while 201 means a resource was successfully created. 400 indicates a bad request, 401 means authentication is required or invalid, 403 means access is forbidden, 404 means the resource was not found, and 500 indicates an unexpected server-side error. The exact status should describe what happened rather than returning the same code for every outcome."
+    },
+    "async_python": {
+      "question_patterns": [
+        "what is async in python",
+        "difference between async and sync",
+        "when would you use async await"
+      ],
+      "keywords": [
+        "async",
+        "await",
+        "asynchronous",
+        "synchronous",
+        "python",
+        "concurrency",
+        "io"
+      ],
+      "answer": "In Python, async and await are used to write asynchronous code, especially for operations that spend time waiting for I/O such as network requests. An async function is declared with async def, and await pauses that coroutine until an awaitable operation completes, allowing the event loop to run other work in the meantime. Async code is useful for I/O-bound concurrency, but it does not automatically make CPU-heavy work faster."
+    },
+    "api_crud": {
+      "question_patterns": [
+        "what is crud",
+        "explain create read update delete",
+        "how do you build api operations"
+      ],
+      "keywords": [
+        "crud",
+        "create",
+        "read",
+        "update",
+        "delete",
+        "api",
+        "post",
+        "get",
+        "put",
+        "patch"
+      ],
+      "answer": "CRUD stands for Create, Read, Update, and Delete, the four basic operations used to manage records. In a REST-style API, these are commonly represented by methods such as POST, GET, PUT or PATCH, and DELETE. In an application, each operation should validate inputs, check permissions, interact safely with the data store, and return an appropriate response."
+    },
+    "database_transactions": {
+      "question_patterns": [
+        "what is a database transaction",
+        "why use transactions for orders",
+        "how do you maintain data consistency"
+      ],
+      "keywords": [
+        "database",
+        "transaction",
+        "acid",
+        "orders",
+        "inventory",
+        "consistency",
+        "commit",
+        "rollback"
+      ],
+      "answer": "A database transaction groups related operations so they succeed or fail together. This is important in workflows such as order processing, where creating an order and updating inventory should remain consistent. If part of the operation fails, a rollback can prevent the database from being left in a partially updated state."
+    },
+    "database_index": {
+      "question_patterns": [
+        "what is a database index",
+        "why use indexes",
+        "how do indexes improve queries"
+      ],
+      "keywords": [
+        "database",
+        "index",
+        "indexes",
+        "query",
+        "performance",
+        "lookup",
+        "sql"
+      ],
+      "answer": "A database index is an additional data structure that helps the database find rows more efficiently without scanning the entire table. Indexes can improve read queries on frequently filtered or joined columns, but they use storage and add work to inserts, updates, and deletes. They should be selected based on actual query patterns and measured performance."
     }
   },
-  "fallback_response": "I don't have a verified answer for that question based on my profile data. I'm an AI representative with access to Sandip's verified background — education, work experience, projects, and skills. If you ask about something not covered in that profile (like personal opinions, specific metrics, or unverified details), I'll be honest that I don't have that information. You could ask me about my education, work history, projects, technical skills, or how I approach problems instead.",
+  "fallback_response": "I do not have a verified answer for that question in Shishupal's profile. I am an AI representative, not Shishupal himself, and I should not invent personal details, technical ownership, metrics, or project outcomes. I can explain his documented education, work experience, projects, skills, and professional approach, or share the relevant public GitHub repository when one is available.",
   "similar_question_threshold": 0.3,
   "min_keyword_overlap": {
     "life_story": 2,
-    "superpower": 1,
+    "career_summary": 2,
+    "education": 2,
+    "career_transition": 2,
+    "why_ai": 1,
+    "current_work": 2,
+    "freelance_ecommerce": 2,
+    "ai_news_automation": 2,
+    "brainhap_role": 1,
+    "ai_variant_role": 1,
+    "biomedical_experience": 1,
+    "service_engineer": 1,
+    "upwork_freelance": 1,
+    "project_portfolio": 2,
+    "renewal_engine": 2,
+    "rag_assistant": 2,
+    "bme_bot": 1,
+    "multipurpose_chatbot": 1,
+    "swiggy_rag": 1,
+    "facial_emotion_detector": 1,
+    "audio_emotion_classifier": 1,
+    "sentiment_trend_reader": 1,
+    "ai_apparel_design": 1,
+    "book_recommender": 1,
+    "resume_analyzer": 1,
+    "cluster_analyzer": 1,
+    "walmart_sql": 1,
+    "web_scraping": 1,
+    "yt_downloader": 1,
+    "python_skill": 1,
+    "fastapi_skill": 1,
+    "machine_learning_skill": 1,
+    "rag_concept": 1,
+    "llm_concept": 1,
+    "vector_database": 1,
+    "embeddings_concept": 1,
+    "postgresql_skill": 1,
+    "mysql_skill": 1,
+    "ai_assisted_development": 1,
+    "api_concept": 1,
+    "problem_solving": 1,
+    "strengths": 1,
     "growth_areas": 1,
+    "challenge": 1,
+    "failure_learning": 1,
+    "ai_quality": 1,
+    "why_hire": 1,
+    "career_goals": 1,
+    "learning_new_technology": 1,
+    "teamwork": 1,
+    "communication": 1,
+    "deadlines": 1,
+    "certifications": 1,
+    "location_availability": 1,
+    "compensation": 1,
+    "why_freelance": 1,
     "misconception": 1,
     "boundaries": 1,
-    "projects": 1
+    "fallback_personal": 1,
+    "renewal_model_selection": 1,
+    "model_evaluation_limitations": 1,
+    "missing_data_assumptions": 1,
+    "silent_churn": 1,
+    "sdk_risk": 1,
+    "fuzzy_matching": 1,
+    "feature_engineering": 1,
+    "random_forest_concept": 1,
+    "supervised_unsupervised": 1,
+    "classification_metrics": 1,
+    "overfitting": 1,
+    "train_test_split": 1,
+    "python_collections": 1,
+    "pandas_numpy": 1,
+    "sql_joins": 1,
+    "parameterized_queries": 1,
+    "fastapi_validation": 1,
+    "http_status_codes": 1,
+    "async_python": 1,
+    "api_crud": 1,
+    "database_transactions": 1,
+    "database_index": 1
   },
   "max_history_turns": 6
 }
