@@ -1,6 +1,6 @@
-# Shishupal's 100x Interview Voicebot
+# Shishupal's Voicebot
 
-A minimal Next.js frontend with one FastAPI backend file for the 100x Stage 1 assessment. It supports text, microphone recording, Groq Whisper speech transcription, reviewed answers for the five sample prompts, Groq-first/OpenRouter-second LLM fallback, and browser speech playback.
+A minimal Next.js frontend with one FastAPI backend file for the Voice Assistant. It supports text, microphone recording, Groq Whisper speech transcription, reviewed answers for the five sample prompts, Groq-first/OpenRouter-second LLM fallback, and browser speech playback.
 
 ## Local setup (Windows PowerShell)
 

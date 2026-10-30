@@ -1,47 +1,92 @@
-"use client"; // Enable browser microphone, state, and speech synthesis features for this page.
+"use client";
 
-// Import React hooks for chat state, recording and audio playback.
-import { useEffect, useRef, useState } from "react"; // Use refs for browser objects and state for visible UI updates.
+import { useEffect, useRef, useState, useCallback } from "react";
 
-// Define the shape of a message shown in the conversation transcript.
-type Message = { role: "user" | "assistant"; content: string }; // Keep the UI history consistent with the API's accepted message format.
+type Message = { role: "user" | "assistant"; content: string };
+type LoadingState = "idle" | "transcribing" | "thinking" | "speaking";
 
-// Provide short starter questions that let an evaluator try the demo immediately.
-const prompts = ["What should we know about your life story?", "What's your number-one superpower?", "What are the top three areas you'd like to grow in?", "What misconception might coworkers have about you?", "How do you push your boundaries?"]; // Mirror the assessment's example prompts as one-click demo chips.
+const PROMPTS = [
+  "What should we know about your life story?",
+  "What's your number-one superpower?",
+  "What are the top three areas you'd like to grow in?",
+  "What misconception might coworkers have about you?",
+  "How do you push your boundaries?",
+  "What projects have you built?",
+  "What is your educational background?",
+  "Where did you work before?",
+];
 
-// Render the complete interview voicebot interface.
-export default function HomePage() { // Define the page component used at the public root URL.
-  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: "Hi, I'm an AI version representing Shishupal. Ask me about my background, projects, strengths or how I approach problems." }]); // Start with a transparent greeting so evaluators know this is an AI representative.
-  const [question, setQuestion] = useState(""); // Track text currently entered into the question box.
-  const [status, setStatus] = useState("Ready when you are."); // Show what the app is doing in plain language.
-  const [busy, setBusy] = useState(false); // Prevent overlapping requests while a response is being generated.
-  const [recording, setRecording] = useState(false); // Reflect whether microphone recording is active.
-  const [voiceEnabled, setVoiceEnabled] = useState(true); // Let visitors turn spoken answers off if they prefer reading.
-  const [provider, setProvider] = useState(""); // Display which model path answered for troubleshooting.
-  const [lastTranscript, setLastTranscript] = useState(""); // Keep the most recent speech transcript available for correction.
-  const recorderRef = useRef<MediaRecorder | null>(null); // Keep the browser's active recording object between renders.
-  const streamRef = useRef<MediaStream | null>(null); // Keep the microphone stream so it can be stopped safely.
-  const chunksRef = useRef<BlobPart[]>([]); // Collect audio chunks until the user stops recording.
-  const transcriptRef = useRef<HTMLDivElement | null>(null); // Reference the transcript so new messages can be brought into view.
+const STORAGE_KEY = "voicebot-conversation";
 
-  // Cleanup on unmount: stop any active recording and speech
+export default function HomePage() {
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) return JSON.parse(stored);
+      } catch { }
+    }
+    return [{ role: "assistant", content: "Hi, I'm an AI version representing Shishupal. Ask me about my background, projects, strengths or how I approach problems." }];
+  });
+  const [question, setQuestion] = useState("");
+  const [status, setStatus] = useState("Ready when you are.");
+  const [loadingState, setLoadingState] = useState<LoadingState>("idle");
+  const [recording, setRecording] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [provider, setProvider] = useState("");
+  const [lastTranscript, setLastTranscript] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [selectedVoiceName, setSelectedVoiceName] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const chunksRef = useRef<BlobPart[]>([]);
+  const transcriptRef = useRef<HTMLDivElement | null>(null);
+  const voicesByLangRef = useRef<Record<string, SpeechSynthesisVoice[]>>({});
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const audioLevelRef = useRef(0);
+
+  // Persist conversation
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // Dark mode
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("voicebot-darkmode");
+      if (stored !== null) setDarkMode(JSON.parse(stored));
+      else setDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("voicebot-darkmode", JSON.stringify(darkMode));
+      document.documentElement.classList.toggle("dark", darkMode);
+    }
+  }, [darkMode]);
+
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      // Stop recording if active
       if (recorderRef.current && recorderRef.current.state !== "inactive") {
         recorderRef.current.stop();
       }
-      // Stop all audio tracks
       streamRef.current?.getTracks().forEach((track) => track.stop());
-      // Cancel speech synthesis
       if ("speechSynthesis" in window) {
         window.speechSynthesis.cancel();
       }
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (audioContextRef.current) audioContextRef.current.close();
     };
-  }, []); // Run once on mount/unmount
-
-  // Cache available voices grouped by language
-  const voicesByLangRef = useRef<Record<string, SpeechSynthesisVoice[]>>({});
+  }, []);
 
   // Load and organize voices on mount
   useEffect(() => {
@@ -49,31 +94,24 @@ export default function HomePage() { // Define the page component used at the pu
 
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
-      if (voices.length === 0) return; // Voices not loaded yet
+      if (voices.length === 0) return;
 
-      // Debug: log all available voices
-      console.log('[Voicebot] Available voices:', voices.map(v => ({ name: v.name, lang: v.lang, default: v.default })));
-
-      // Group voices by language
       const byLang: Record<string, SpeechSynthesisVoice[]> = {};
       for (const voice of voices) {
-        const lang = voice.lang.split("-")[0]; // Base language (e.g., "hi", "en")
+        const lang = voice.lang.split("-")[0];
         if (!byLang[lang]) byLang[lang] = [];
         byLang[lang].push(voice);
       }
       voicesByLangRef.current = byLang;
 
-      console.log('[Voicebot] Voices grouped by language:', Object.keys(byLang).map(k => ({ lang: k, count: byLang[k].length, voices: byLang[k].map(v => v.name) })));
+      // Log for debugging
+      console.log("[Voicebot] Voices loaded:", voices.map(v => ({ name: v.name, lang: v.lang })));
     };
 
-    // Voices might already be loaded
     loadVoices();
-
-    // Chrome fires voiceschanged event when voices load
     if ("onvoiceschanged" in window.speechSynthesis) {
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
-
     return () => {
       if ("onvoiceschanged" in window.speechSynthesis) {
         window.speechSynthesis.onvoiceschanged = null;
@@ -81,144 +119,360 @@ export default function HomePage() { // Define the page component used at the pu
     };
   }, []);
 
-  // Select best voice for a given language
-  const selectVoiceForLang = (lang: string): SpeechSynthesisVoice | null => {
+  // Select best MALE voice for a given language
+  const selectVoiceForLang = useCallback((lang: string): SpeechSynthesisVoice | null => {
     const baseLang = lang.split("-")[0];
     const voices = voicesByLangRef.current[baseLang];
     if (!voices || voices.length === 0) return null;
 
-    // Prefer high-quality voices (Google, Microsoft) and male voices for consistency
-    const preferredNames = [
-      "Google",
-      "Microsoft",
-    ];
+    // ONLY male voices, prefer Google/Microsoft
+    const preferredVendors = ["Google", "Microsoft"];
 
-    // First try: preferred vendor + male
-    for (const pref of preferredNames) {
-      const found = voices.find(v => v.name.includes(pref) && v.name.toLowerCase().includes("male"));
+    // 1. Preferred vendor + male
+    for (const vendor of preferredVendors) {
+      const found = voices.find(v => v.name.includes(vendor) && v.name.toLowerCase().includes("male"));
       if (found) return found;
     }
 
-    // Second try: preferred vendor (any gender)
-    for (const pref of preferredNames) {
-      const found = voices.find(v => v.name.includes(pref));
-      if (found) return found;
-    }
-
-    // Third try: any male voice
+    // 2. Any male voice
     const maleVoice = voices.find(v => v.name.toLowerCase().includes("male"));
     if (maleVoice) return maleVoice;
 
-    // Fallback: first available
-    return voices[0];
-  };
+    // 3. If no male voice exists for this language, return null (will use default)
+    return null;
+  }, []);
 
-  useEffect(() => { // Keep the latest message visible after a reply is added.
-    transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior: "smooth" }); // Scroll only the transcript region, not the whole page.
-  }, [messages]); // Run the scroll behavior whenever conversation messages change.
+  // Audio level visualization
+  const startAudioLevelMeter = useCallback(async () => {
+    if (!streamRef.current) return;
+    try {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const source = audioContextRef.current.createMediaStreamSource(streamRef.current);
+      analyserRef.current = audioContextRef.current.createAnalyser();
+      analyserRef.current.fftSize = 256;
+      source.connect(analyserRef.current);
 
-  function speak(text: string) { // Read a reply aloud using the browser's built-in speech engine.
-    if (!voiceEnabled || typeof window === "undefined" || !("speechSynthesis" in window)) return; // Skip voice when disabled or unsupported by the browser.
-    window.speechSynthesis.cancel(); // Stop previous speech so replies do not overlap.
-    const utterance = new SpeechSynthesisUtterance(text); // Convert the answer text into a browser speech request.
+      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+      const update = () => {
+        if (!analyserRef.current || !recording) return;
+        analyserRef.current.getByteFrequencyData(dataArray);
+        const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+        audioLevelRef.current = average / 255;
+        animationFrameRef.current = requestAnimationFrame(update);
+      };
+      update();
+    } catch (e) {
+      console.warn("[Voicebot] Audio level meter failed:", e);
+    }
+  }, [recording]);
 
-    // Improved language detection: check for Devanagari, common Hinglish words, and Latin script
-    const hasDevanagari = /[\u0900-\u097F]/.test(text);
+  const stopAudioLevelMeter = useCallback(() => {
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+    analyserRef.current = null;
+    audioLevelRef.current = 0;
+  }, []);
+
+  function speak(text: string) {
+    if (!voiceEnabled || typeof window === "undefined" || !("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    const hasDevanagari = /[ऀ-ॿ]/.test(text);
     const hasHinglish = /\b(mai|main|mera|meri|mere|tum|tera|teri|tere|ham|hamara|hamari|kya|kaise|kahan|kab|kyun|kon|acha|accha|theek|thik|haan|nahi|nahin|ji|haanji|nahiji|bas|abhi|ab|kal|aaj|subah|shaam|raat|din|hafta|mahina|saal|kaam|kaam kar|chahiye|chahte|pasand|pasand hai|nahi pasand|achha|accha laga|bura|bura laga|problem|issue|solution|help|madad|shukriya|dhanyawad|sorry|maaf|kripya|please|thank you|thanks)\b/i.test(text);
 
-    const targetLang = hasDevanagari ? "hi-IN" : (hasHinglish ? "hi-IN" : "en-IN"); // Select Hindi for Devanagari or Hinglish, English otherwise
-
-    // Select best voice for the target language
+    const targetLang = hasDevanagari ? "hi-IN" : (hasHinglish ? "hi-IN" : "en-IN");
     const selectedVoice = selectVoiceForLang(targetLang);
+
     if (selectedVoice) {
       utterance.voice = selectedVoice;
-      utterance.lang = selectedVoice.lang; // Use voice's native language for best quality
-      console.log('[Voicebot] Speaking with voice:', selectedVoice.name, 'lang:', selectedVoice.lang, 'targetLang:', targetLang);
+      utterance.lang = selectedVoice.lang;
+      setSelectedVoiceName(selectedVoice.name);
+      console.log("[Voicebot] Speaking with:", selectedVoice.name, selectedVoice.lang);
     } else {
-      utterance.lang = targetLang; // Fallback to target language
-      console.log('[Voicebot] No voice found for', targetLang, '- using default');
+      utterance.lang = targetLang;
+      setSelectedVoiceName("Default (browser)");
+      console.log("[Voicebot] No male voice for", targetLang, "- using default");
     }
 
-    utterance.rate = 0.98; // Use a slightly measured pace for more natural interview-style speech.
-    utterance.pitch = 1; // Keep a neutral pitch instead of an exaggerated voice effect.
-    window.speechSynthesis.speak(utterance); // Play the answer using a voice available on the visitor's device.
+    utterance.rate = 0.98;
+    utterance.pitch = 1;
+    utterance.onstart = () => setLoadingState("speaking");
+    utterance.onend = () => setLoadingState("idle");
+    utterance.onerror = () => setLoadingState("idle");
+    window.speechSynthesis.speak(utterance);
   }
 
-  async function ask(text: string, audioBlob?: Blob) { // Submit either typed text or a recorded audio question.
-    const cleaned = text.trim(); // Remove accidental leading and trailing spaces from typed questions.
-    if (!cleaned && !audioBlob) return; // Do not send an empty question to the server.
-    setBusy(true); // Disable controls until the request finishes.
-    setStatus(audioBlob ? "Transcribing your question…" : "Thinking…"); // Tell the visitor which stage is in progress.
-    if (cleaned) setMessages((current) => [...current, { role: "user", content: cleaned }]); // Show a typed question immediately in the transcript.
-    setQuestion(""); // Clear the input after a valid submission starts.
-    try { // Handle network and API errors without breaking the interface.
-      const form = new FormData(); // Use multipart form data for text and optional recorded audio.
-      if (cleaned) form.append("text", cleaned); // Send text input when provided.
-      if (audioBlob) form.append("audio", audioBlob, "question.webm"); // Attach the microphone recording when this is a voice question.
-      form.append("history", JSON.stringify(messages.slice(-6))); // Send only a small recent history window to preserve conversational context.
-      const response = await fetch("/api/chat", { method: "POST", body: form }); // Call our own backend so private provider keys stay on the server.
-      const data = await response.json() as { answer?: string; error?: string; transcript?: string; provider?: string; needsConfirmation?: boolean }; // Parse the typed response from the API route.
-      if (!response.ok || !data.answer) { // Handle transcription confirmation separately so the user can correct recognition errors.
-        if (data.transcript) { setLastTranscript(data.transcript); setQuestion(data.transcript); } // Put the uncertain transcript in the text box where the user can edit it.
-        throw new Error(data.error || "The assistant could not answer that question."); // Convert API failures into a friendly message.
+  async function ask(text: string, audioBlob?: Blob) {
+    const cleaned = text.trim();
+    if (!cleaned && !audioBlob) return;
+    setError(null);
+
+    const isVoice = !!audioBlob;
+    setLoadingState(isVoice ? "transcribing" : "thinking");
+    setStatus(isVoice ? "Transcribing your question…" : "Thinking…");
+
+    if (cleaned) setMessages(current => [...current, { role: "user", content: cleaned }]);
+    setQuestion("");
+
+    try {
+      const form = new FormData();
+      if (cleaned) form.append("text", cleaned);
+      if (audioBlob) form.append("audio", audioBlob, "question.webm");
+      form.append("history", JSON.stringify(messages.slice(-6)));
+
+      const response = await fetch("/api/chat", { method: "POST", body: form });
+      const data = await response.json() as { answer?: string; error?: string; transcript?: string; provider?: string; needsConfirmation?: boolean };
+
+      if (!response.ok || !data.answer) {
+        if (data.transcript) { setLastTranscript(data.transcript); setQuestion(data.transcript); }
+        throw new Error(data.error || "The assistant could not answer that question.");
       }
-      if (data.transcript) { setLastTranscript(data.transcript); setMessages((current) => [...current, { role: "user", content: data.transcript || "" }]); } // Show the recognized question only after the backend accepted it.
-      setMessages((current) => [...current, { role: "assistant", content: data.answer || "" }]); // Add the assistant's answer to the transcript.
-      setProvider(data.provider || ""); // Store the provider label for the small diagnostics line.
-      speak(data.answer || ""); // Speak the answer when voice output is enabled and supported.
-      setStatus("Answer ready."); // Return the status to a calm completed state.
-    } catch (error) { // Handle unavailable network, provider and browser errors.
-      const message = error instanceof Error ? error.message : "Something went wrong. Please try again."; // Extract a readable error message.
-      setStatus(message); // Surface the problem in the status line rather than hiding it.
-    } finally { // Always restore the input controls when the request completes.
-      setBusy(false); // Allow the visitor to ask another question.
+
+      if (data.transcript) { setLastTranscript(data.transcript); setMessages(current => [...current, { role: "user", content: data.transcript || "" }]); }
+      setMessages(current => [...current, { role: "assistant", content: data.answer || "" }]);
+      setProvider(data.provider || "");
+      speak(data.answer || "");
+      setStatus("Answer ready.");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setError(message);
+      setStatus(message);
+    } finally {
+      setLoadingState("idle");
     }
   }
 
-  async function startRecording() { // Ask for microphone access and begin capturing the question.
-    try { // Handle browsers that deny permission or do not support recording.
-      if (!("MediaRecorder" in window)) throw new Error("This browser does not support microphone recording. Please type your question."); // Check recording support before opening the microphone.
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true }); // Request microphone access only after the visitor clicks the mic button.
-      streamRef.current = stream; // Keep the stream so all microphone tracks can be stopped later.
-      const preferredType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : "audio/webm"; // Prefer the widely supported compressed WebM format.
-      const recorder = new MediaRecorder(stream, { mimeType: preferredType }); // Create a recorder using the selected supported format.
-      recorderRef.current = recorder; // Store the recorder so the stop button can access it.
-      chunksRef.current = []; // Clear any chunks from an earlier recording.
-      recorder.ondataavailable = (event) => { if (event.data.size > 0) chunksRef.current.push(event.data); }; // Collect non-empty audio chunks emitted by the browser.
-      recorder.onstop = () => { const blob = new Blob(chunksRef.current, { type: preferredType }); stream.getTracks().forEach((track) => track.stop()); streamRef.current = null; setRecording(false); if (blob.size > 0) void ask("", blob); else setStatus("No audio was captured. Please try again or type your question."); }; // Package the audio, release the microphone and send the recording for transcription.
-      recorder.start(250); // Collect audio in short chunks so the browser can build the recording progressively.
-      setRecording(true); // Update the button label and recording indicator.
-      setStatus("Listening… speak clearly, then click Stop. You can review the transcript before sending."); // Explain how to end recording without relying on hidden auto-stop behavior.
-    } catch (error) { // Show a useful fallback when microphone setup fails.
-      setStatus(error instanceof Error ? error.message : "Microphone access failed. Please type your question."); // Preserve text chat as the fallback path.
-      streamRef.current?.getTracks().forEach((track) => track.stop()); // Release any stream opened before the failure occurred.
-      streamRef.current = null; // Clear the stored stream reference.
-      setRecording(false); // Ensure the UI no longer claims recording is active.
+  async function startRecording() {
+    try {
+      if (!("MediaRecorder" in window)) throw new Error("This browser does not support microphone recording. Please type your question.");
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const preferredType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus" : "audio/webm";
+      const recorder = new MediaRecorder(stream, { mimeType: preferredType });
+      recorderRef.current = recorder;
+      chunksRef.current = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: preferredType });
+        stream.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
+        setRecording(false);
+        stopAudioLevelMeter();
+        if (blob.size > 0) void ask("", blob);
+        else setStatus("No audio was captured. Please try again or type your question.");
+      };
+      recorder.start(250);
+      setRecording(true);
+      setStatus("Listening… speak clearly, then click Stop.");
+      await startAudioLevelMeter();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Microphone access failed.");
+      setStatus(err instanceof Error ? err.message : "Microphone access failed. Please type your question.");
+      streamRef.current?.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+      setRecording(false);
     }
   }
 
-  function stopRecording() { // Stop the current recording and trigger the recorder's onstop handler.
-    if (recorderRef.current && recorderRef.current.state !== "inactive") recorderRef.current.stop(); // Stop only an active recorder to avoid browser exceptions.
+  function stopRecording() {
+    if (recorderRef.current && recorderRef.current.state !== "inactive") recorderRef.current.stop();
   }
 
-  function stopSpeaking() { // Allow the visitor to interrupt the spoken answer.
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel(); // Cancel browser speech immediately when the visitor clicks Stop speaking.
+  function stopSpeaking() {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    setLoadingState("idle");
   }
 
-  return ( // Render the page with a header, transcript, text input, mic and prompt chips.
-    <main>
-      <header><div><div className="eyebrow">100x · Gen AI assessment</div><h1>Meet Shishupal's AI voicebot</h1><p>An interactive, profile-grounded assistant for questions about my work and approach.</p></div></header>
+  function clearConversation() {
+    setMessages([{ role: "assistant", content: "Hi, I'm an AI version representing Shishupal. Ask me about my background, projects, strengths or how I approach problems." }]);
+    setLastTranscript("");
+    setProvider("");
+    setSelectedVoiceName("");
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  function exportConversation() {
+    const data = { messages, timestamp: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `voicebot-conversation-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setShowExport(false);
+  }
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.code === "Space" && loadingState === "idle" && !recording) { e.preventDefault(); void startRecording(); }
+      if (e.code === "Escape") { if (recording) stopRecording(); else if (loadingState === "speaking") stopSpeaking(); }
+      if (e.ctrlKey && e.key === "e") { e.preventDefault(); setShowExport(true); }
+      if (e.ctrlKey && e.key === "d") { e.preventDefault(); setDarkMode(d => !d); }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [loadingState, recording]);
+
+  // Auto-scroll transcript
+  useEffect(() => {
+    transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages]);
+
+  const formatLevel = (level: number) => Math.round(level * 100);
+
+  return (
+    <main className={darkMode ? "dark" : ""}>
+      <header>
+        <div className="header-content">
+          <h1>Shishupal's AI Voice Assistant</h1>
+          <p className="subtitle">Ask me about my background, projects, skills, or how I approach problems.</p>
+        </div>
+        <button className="icon-btn" onClick={() => setDarkMode(d => !d)} aria-label={darkMode ? "Light mode" : "Dark mode"}>
+          {darkMode ? "☀️" : "🌙"}
+        </button>
+      </header>
+
       <section className="panel" aria-label="Voicebot conversation">
-        <div className="transcript" ref={transcriptRef} aria-live="polite">{messages.map((message, index) => <div className={`message ${message.role}`} key={`${message.role}-${index}`}><strong>{message.role === "assistant" ? "Shishupal's AI" : "You"}</strong><div>{message.content}</div></div>)}</div>
-        <div className="status" role="status">{status}{provider ? ` · Response source: ${provider}` : ""}</div>
-        {lastTranscript ? <p className="transcript-review">Last recognised speech: <strong>{lastTranscript}</strong>. If it is wrong, edit the text box and press Ask.</p> : null}
+        <div className="transcript" ref={transcriptRef} aria-live="polite">
+          {messages.map((message, index) => (
+            <div key={`${message.role}-${index}`} className={`message ${message.role}`}>
+              <strong>{message.role === "assistant" ? "Shishupal's AI" : "You"}</strong>
+              <div>{message.content}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="status-bar">
+          <div className="status-left">
+            <span className={`status-indicator ${loadingState}`} aria-hidden="true"></span>
+            <span className="status-text">{status}</span>
+            {selectedVoiceName && (
+              <span className="voice-badge" title="Active TTS voice">
+                🔊 {selectedVoiceName}
+              </span>
+            )}
+          </div>
+          <div className="status-right">
+            {provider && <span className="provider-badge">Provider: {provider}</span>}
+            {recording && (
+              <span className="recording-indicator" aria-live="polite">
+                <span className="pulse" aria-hidden="true"></span>
+                REC {formatLevel(audioLevelRef.current)}%
+              </span>
+            )}
+          </div>
+        </div>
+
+        {lastTranscript && (
+          <p className="transcript-review">
+            Last recognised speech: <strong>{lastTranscript}</strong>.
+            If it is wrong, edit the text box and press Ask.
+          </p>
+        )}
+
+        {error && <div className="error-toast" role="alert">{error}</div>}
+
         <div className="controls">
-          <form className="inputrow" onSubmit={(event) => { event.preventDefault(); void ask(question); }}><input value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Ask a question in English, Hindi or Hinglish…" aria-label="Type your question" maxLength={2000} /><button type="submit" disabled={busy || !question.trim()}>Ask</button></form>
-          <div className="microw"><button className="mic" type="button" onClick={recording ? stopRecording : () => void startRecording()} disabled={busy}>{recording ? "Stop recording" : "🎙 Ask by voice"}</button><button type="button" onClick={() => setVoiceEnabled((enabled) => !enabled)}>{voiceEnabled ? "Voice: on" : "Voice: off"}</button><button type="button" onClick={stopSpeaking}>Stop speaking</button></div>
-          <div className="chips" aria-label="Suggested questions">{prompts.map((prompt) => <button className="chip" type="button" key={prompt} disabled={busy} onClick={() => void ask(prompt)}>{prompt}</button>)}</div>
+          <form className="inputrow" onSubmit={e => { e.preventDefault(); void ask(question); }}>
+            <input
+              value={question}
+              onChange={e => setQuestion(e.target.value)}
+              placeholder="Ask a question in English, Hindi or Hinglish…"
+              aria-label="Type your question"
+              maxLength={1000}
+              disabled={loadingState !== "idle"}
+            />
+            <button type="submit" disabled={loadingState !== "idle" || !question.trim()} aria-busy={loadingState !== "idle"}>
+              {loadingState === "thinking" ? "Thinking…" : loadingState === "transcribing" ? "Transcribing…" : "Ask"}
+            </button>
+          </form>
+
+          <div className="microw">
+            <button
+              className={`mic ${recording ? "recording" : ""}`}
+              type="button"
+              onClick={recording ? stopRecording : () => void startRecording()}
+              disabled={loadingState !== "idle"}
+              aria-pressed={recording}
+              aria-label={recording ? "Stop recording (Esc)" : "Start voice recording (Space)"}
+            >
+              {recording ? "⏹ Stop" : "🎙 Ask by Voice"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setVoiceEnabled(v => !v)}
+              aria-pressed={voiceEnabled}
+              aria-label={voiceEnabled ? "Disable voice output" : "Enable voice output"}
+            >
+              {voiceEnabled ? "🔊 Voice: On" : "🔇 Voice: Off"}
+            </button>
+            <button
+              type="button"
+              onClick={stopSpeaking}
+              disabled={loadingState !== "speaking"}
+              aria-label="Stop speaking (Esc)"
+            >
+              ⏹ Stop Speaking
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowExport(true)}
+              aria-label="Export conversation"
+            >
+              💾 Export
+            </button>
+            <button
+              type="button"
+              onClick={clearConversation}
+              aria-label="Clear conversation"
+            >
+              🗑 Clear
+            </button>
+          </div>
+
+          <div className="chips" aria-label="Suggested questions">
+            {PROMPTS.map((prompt) => (
+              <button
+                className="chip"
+                type="button"
+                key={prompt}
+                disabled={loadingState !== "idle"}
+                onClick={() => void ask(prompt)}
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+
+          <div className="shortcuts">
+            <kbd>Space</kbd> Record &nbsp;|&nbsp; <kbd>Esc</kbd> Stop &nbsp;|&nbsp; <kbd>Ctrl+E</kbd> Export &nbsp;|&nbsp; <kbd>Ctrl+D</kbd> Dark mode
+          </div>
         </div>
       </section>
-      <p className="note">This is an AI representation, not the real person. Answers are based on verified profile information and may not cover every personal detail.</p>
+
+      <p className="note">
+        This is an AI representation, not the real person. Answers are based on verified profile information.
+      </p>
+
+      {showExport && (
+        <div className="modal-overlay" onClick={() => setShowExport(false)} role="dialog" aria-modal="true" aria-labelledby="export-title">
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h3 id="export-title">Export Conversation</h3>
+            <p>Download the current conversation as JSON.</p>
+            <div className="modal-actions">
+              <button onClick={exportConversation}>Download JSON</button>
+              <button onClick={() => setShowExport(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # Redis for distributed rate limiting (optional but recommended)
+  redis:
+    image: redis:7-alpine
+    container_name: voicebot-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - voicebot-network
+
+  # Main voicebot application
+  voicebot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: voicebot-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"  # Next.js frontend
+      - "8000:8000"  # FastAPI backend
+    environment:
+      # Redis configuration
+      - REDIS_URL=redis://redis:6379
+      # Rate limiting
+      - RATE_LIMIT_PER_MINUTE=20
+      # Audio limits
+      - MAX_AUDIO_MB=12
+      - MAX_AUDIO_DURATION_SECONDS=60
+      # CORS - configure for production
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      # App URL for OpenRouter attribution
+      - APP_URL=http://localhost:3000
+      # Optional: Fixed STT language (empty = auto-detect)
+      - GROQ_STT_LANGUAGE=
+      # Provider API keys - SET THESE IN PRODUCTION!
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      # Model configuration
+      - GROQ_MODEL=openai/gpt-oss-20b
+      - GROQ_STT_MODEL=whisper-large-v3
+      - OPENROUTER_MODEL=openrouter/free
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      # Mount data directory for persistence if needed
+      - ./backend/data:/app/backend/data:ro
+    networks:
+      - voicebot-network
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # Optional: Nginx reverse proxy for production
+  nginx:
+    image: nginx:alpine
+    container_name: voicebot-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - voicebot
+    networks:
+      - voicebot-network
+    profiles:
+      - production
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  voicebot-network:
+    driver: bridge

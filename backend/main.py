@@ -3,13 +3,20 @@ from dotenv import load_dotenv  # Read a local .env file without requiring manua
 load_dotenv()  # Load environment values before reading any provider configuration.
 
 # Import standard-library helpers for environment settings, JSON history, time windows, and typing.
+import asyncio  # Async sleep for retry backoff
 import json  # Parse the small chat history sent by the browser.
 import logging  # Structured logging for request tracing and debugging.
 import os  # Read API keys and model names from environment variables.
+import random  # Jitter for exponential backoff
 import re  # Detect a few suspicious one-word transcription results.
 import time  # Track a basic per-process request limit.
 import uuid  # Generate correlation IDs for request tracing.
+from dataclasses import dataclass, field  # Circuit breaker state
 from typing import Any  # Describe the flexible JSON values returned by providers.
+from typing import Annotated  # For pydantic field constraints
+
+# Import pydantic for input validation
+from pydantic import BaseModel, Field, field_validator  # Type-safe request/response models
 
 # Import the small web server, multipart-upload support, and asynchronous HTTP client.
 import httpx  # Call Groq and OpenRouter without exposing provider keys to the browser.
@@ -36,6 +43,57 @@ logging.basicConfig(
 )
 logger = logging.getLogger("voicebot")
 
+
+# Pydantic models for type-safe request/response validation
+class ChatRequest(BaseModel):
+    """Validated chat request from frontend proxy."""
+    text: str = Field(default="", max_length=1000)
+    history: list[dict[str, str]] = Field(default_factory=list)
+
+    @field_validator("text")
+    @classmethod
+    def validate_text(cls, v: str) -> str:
+        # Reject control characters (except newline/tab)
+        if re.search(r"[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]", v):
+            raise ValueError("Question contains invalid characters.")
+        return v.strip()
+
+    @field_validator("history")
+    @classmethod
+    def validate_history(cls, v: list[dict[str, str]]) -> list[dict[str, str]]:
+        # Keep only valid message roles and last 6 entries
+        valid = [
+            item for item in v
+            if isinstance(item, dict)
+            and item.get("role") in {"user", "assistant"}
+            and isinstance(item.get("content"), str)
+        ]
+        return valid[-6:]
+
+
+class HealthResponse(BaseModel):
+    """Validated health check response."""
+    status: str
+    service: str
+    redis: str | None = None
+    providers: dict[str, bool]
+    circuit_breakers: dict[str, dict[str, Any]] | None = None
+
+
+class ChatResponse(BaseModel):
+    """Validated chat response."""
+    answer: str
+    provider: str
+    transcript: str | None = None
+
+
+class ChatErrorResponse(BaseModel):
+    """Validated chat error response."""
+    error: str
+    transcript: str | None = None
+    needsConfirmation: bool | None = None
+
+
 def get_correlation_id(request: Request) -> str:
     """Extract or generate correlation ID for request tracing."""
     return request.headers.get("x-correlation-id") or str(uuid.uuid4())[:8]
@@ -48,6 +106,7 @@ GROQ_STT_MODEL = os.getenv("GROQ_STT_MODEL", "whisper-large-v3")  # Prefer Whisp
 OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openrouter/free")  # Ask OpenRouter to route to an available free model by default.
 APP_URL = os.getenv("APP_URL", "https://example.com")  # Identify the app to OpenRouter; replace with the deployed frontend URL.
 MAX_AUDIO_MB = float(os.getenv("MAX_AUDIO_MB", "12"))  # Limit audio upload size before forwarding it to the transcription provider.
+MAX_AUDIO_DURATION_SECONDS = int(os.getenv("MAX_AUDIO_DURATION_SECONDS", "60"))  # Max audio duration in seconds
 RATE_LIMIT = int(os.getenv("RATE_LIMIT_PER_MINUTE", "20"))  # Restrict accidental bursts against the provider keys.
 
 # Rate limiter configuration — use Redis if available, otherwise in-memory fallback
@@ -108,6 +167,104 @@ class RateLimiter:
 rate_limiter = RateLimiter()
 
 
+# Circuit breaker for provider resilience
+@dataclass
+class CircuitBreaker:
+    """Circuit breaker to prevent cascading failures when a provider is down."""
+
+    failure_threshold: int = 3  # Number of failures before opening circuit
+    recovery_timeout: float = 30.0  # Seconds before attempting recovery
+    half_open_max_calls: int = 2  # Max calls in half-open state
+
+    failures: int = field(default=0, init=False)
+    last_failure_time: float = field(default=0, init=False)
+    state: str = field(default="closed", init=False)  # closed, open, half-open
+    half_open_calls: int = field(default=0, init=False)
+
+    def record_success(self) -> None:
+        """Record a successful call - reset failures and close circuit."""
+        self.failures = 0
+        self.state = "closed"
+        self.half_open_calls = 0
+
+    def record_failure(self) -> None:
+        """Record a failure - increment counter and potentially open circuit."""
+        self.failures += 1
+        self.last_failure_time = time.time()
+        if self.failures >= self.failure_threshold:
+            self.state = "open"
+            logger.warning(f"Circuit breaker opened after {self.failures} failures")
+
+    def can_execute(self) -> bool:
+        """Check if a call can be executed based on circuit state."""
+        if self.state == "closed":
+            return True
+        if self.state == "open":
+            # Check if recovery timeout has passed
+            if time.time() - self.last_failure_time >= self.recovery_timeout:
+                self.state = "half-open"
+                self.half_open_calls = 0
+                logger.info("Circuit breaker entering half-open state")
+                return True
+            return False
+        # half-open state
+        return self.half_open_calls < self.half_open_max_calls
+
+    def record_half_open_call(self) -> None:
+        """Record a call attempt in half-open state."""
+        if self.state == "half-open":
+            self.half_open_calls += 1
+
+
+# Circuit breakers for each provider
+groq_circuit = CircuitBreaker()
+openrouter_circuit = CircuitBreaker()
+
+
+async def retry_with_backoff(
+    func,
+    *args,
+    max_retries: int = 3,
+    base_delay: float = 1.0,
+    max_delay: float = 10.0,
+    circuit: CircuitBreaker | None = None,
+    **kwargs
+):
+    """
+    Execute a function with exponential backoff and jitter.
+    Respects circuit breaker state if provided.
+    """
+    last_exception = None
+
+    for attempt in range(max_retries + 1):
+        # Check circuit breaker before attempting
+        if circuit and not circuit.can_execute():
+            raise RuntimeError(f"Circuit breaker is {circuit.state} - provider unavailable")
+
+        try:
+            result = await func(*args, **kwargs)
+            if circuit:
+                circuit.record_success()
+            return result
+        except Exception as exc:
+            last_exception = exc
+            if circuit:
+                circuit.record_failure()
+                # If circuit opened, don't retry
+                if circuit.state == "open":
+                    break
+
+            if attempt < max_retries:
+                # Exponential backoff with jitter: delay = base * 2^attempt + random jitter
+                delay = min(base_delay * (2 ** attempt) + random.uniform(0, 0.5), max_delay)
+                logger.warning(f"Attempt {attempt + 1} failed: {type(exc).__name__}; retrying in {delay:.2f}s")
+                await asyncio.sleep(delay)
+            else:
+                logger.error(f"All {max_retries + 1} attempts failed: {type(last_exception).__name__}")
+
+    raise last_exception
+
+
 # Create the small API application with built-in interactive docs at /docs.
 app = FastAPI(title="Shishupal Interview Voicebot API", version="1.0.0", description="A profile-grounded voice and text interview demo.")  # Keep server metadata descriptive and easy to discover.
 
@@ -152,6 +309,44 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # HSTS — only enable in production with HTTPS
         if request.url.scheme == "https":
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        # Permissions-Policy — restrict browser features
+        response.headers["Permissions-Policy"] = (
+            "accelerometer=(), "
+            "ambient-light-sensor=(), "
+            "autoplay=(), "
+            "battery=(), "
+            "camera=(), "
+            "cross-origin-isolated=(), "
+            "display-capture=(), "
+            "document-domain=(), "
+            "encrypted-media=(), "
+            "execution-while-not-rendered=(), "
+            "execution-while-out-of-viewport=(), "
+            "fullscreen=(), "
+            "geolocation=(), "
+            "gyroscope=(), "
+            "hid=(), "
+            "identity-credentials-get=(), "
+            "idle-detection=(), "
+            "keyboard-map=(), "
+            "local-fonts=(), "
+            "magnetometer=(), "
+            "microphone=(self), "  # Allow microphone for voice recording
+            "midi=(), "
+            "navigation-override=(), "
+            "otp-credentials=(), "
+            "payment=(), "
+            "picture-in-picture=(), "
+            "publickey-credentials-get=(), "
+            "screen-wake-lock=(), "
+            "serial=(), "
+            "speaker-selection=(), "
+            "sync-xhr=(), "
+            "usb=(), "
+            "web-share=(), "
+            "window-management=(), "
+            "xr-spatial-tracking=()"
+        )
         return response
 
 app.add_middleware(SecurityHeadersMiddleware)  # Apply security headers to all responses
@@ -189,6 +384,16 @@ async def health() -> dict[str, Any]:  # Use Any to allow flexible response stru
         "groq_configured": bool(GROQ_API_KEY),
         "openrouter_configured": bool(OPENROUTER_API_KEY)
     }
+
+    # Circuit breaker status
+    health_info["circuit_breakers"] = {
+        "groq": {"state": groq_circuit.state, "failures": groq_circuit.failures},
+        "openrouter": {"state": openrouter_circuit.state, "failures": openrouter_circuit.failures}
+    }
+
+    # Overall status considers circuit breakers
+    if groq_circuit.state == "open" and openrouter_circuit.state == "open":
+        health_info["status"] = "degraded"
 
     return health_info  # Return detailed health for monitoring.
 
@@ -228,12 +433,33 @@ async def generate_answer(question: str, history: list[dict[str, str]]) -> tuple
     messages = [{"role": "system", "content": PERSONA}, *history[-MAX_HISTORY_TURNS:], {"role": "user", "content": question}]  # Limit history to recent turns and put persona rules first.
     if GROQ_API_KEY:  # Attempt the primary model only when its key exists.
         try:  # Allow the fallback provider to handle rate limits and temporary Groq failures.
-            answer = await ask_provider("https://api.groq.com/openai/v1", GROQ_API_KEY, GROQ_MODEL, messages)  # Call Groq's compatible chat-completions endpoint.
+            answer = await retry_with_backoff(
+                ask_provider,
+                "https://api.groq.com/openai/v1",
+                GROQ_API_KEY,
+                GROQ_MODEL,
+                messages,
+                max_retries=2,
+                base_delay=1.0,
+                max_delay=5.0,
+                circuit=groq_circuit,
+            )  # Call Groq with retry and circuit breaker
             return answer, "Groq"  # Report the actual provider used to the frontend.
         except Exception as exc:  # Catch provider and network failures without exposing them to website visitors.
             logger.warning(f"Groq generation failed; trying OpenRouter: {type(exc).__name__}")  # Log only the error type, not secrets or user audio.
     if OPENROUTER_API_KEY:  # Try the fallback when Groq is unavailable or failed.
-        answer = await ask_provider("https://openrouter.ai/api/v1", OPENROUTER_API_KEY, OPENROUTER_MODEL, messages, openrouter=True)  # Request the same grounded response from OpenRouter.
+        answer = await retry_with_backoff(
+            ask_provider,
+            "https://openrouter.ai/api/v1",
+            OPENROUTER_API_KEY,
+            OPENROUTER_MODEL,
+            messages,
+            openrouter=True,
+            max_retries=2,
+            base_delay=1.0,
+            max_delay=5.0,
+            circuit=openrouter_circuit,
+        )  # Request the same grounded response from OpenRouter with retry
         return answer, "OpenRouter"  # Tell the frontend which provider succeeded.
 
     # No providers available - return fallback response
@@ -286,6 +512,13 @@ async def chat(request: Request) -> JSONResponse:  # Read form values manually s
             MAX_AUDIO_BYTES = int(MAX_AUDIO_MB * 1024 * 1024)
             if len(audio_bytes) > MAX_AUDIO_BYTES:
                 return JSONResponse({"error": f"That recording is too large. Maximum size is {MAX_AUDIO_MB} MB."}, status_code=413, headers={"X-Correlation-ID": correlation_id})
+
+            # Validate audio duration (estimate from file size for common formats)
+            # Rough estimate: 128 kbps = 16 KB/sec, so max bytes ≈ MAX_AUDIO_DURATION_SECONDS * 16000
+            # This is a heuristic since we can't parse duration without additional libraries
+            estimated_max_bytes = MAX_AUDIO_DURATION_SECONDS * 16000
+            if len(audio_bytes) > estimated_max_bytes:
+                logger.warning(f"Audio file size ({len(audio_bytes)} bytes) may exceed {MAX_AUDIO_DURATION_SECONDS}s duration limit")
 
             # Validate content type (basic check) — accept base MIME type even with codec params (e.g., "audio/webm;codecs=opus")
             content_type = getattr(audio, "content_type", None) or "audio/webm"

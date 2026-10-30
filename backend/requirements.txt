@@ -10,3 +10,5 @@ python-multipart==0.0.9
 python-dotenv==1.0.1
 # redis provides distributed rate limiting across serverless instances (optional)
 redis==5.2.0
+# pydantic provides type-safe request/response validation
+pydantic==2.9.2

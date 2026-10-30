@@ -1,0 +1,88 @@
+# Pre-commit hooks configuration
+# Install with: pip install pre-commit && pre-commit install
+
+repos:
+  # Secret detection
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
+        name: Secret detection with gitleaks
+        entry: gitleaks detect --source . --verbose
+        language: system
+        types: [text]
+        exclude: ^(.*\.lock|package-lock\.json|yarn\.lock|pnpm-lock\.yaml|.*\.log|.*\.md)$
+
+  # Python formatting and linting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        name: Ruff linting
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^backend/
+
+      - id: ruff-format
+        name: Ruff formatting
+        args: [--check]
+        files: ^backend/
+
+  # Python type checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        name: Type checking with mypy
+        additional_dependencies: [fastapi, uvicorn, httpx, pydantic, redis]
+        files: ^backend/
+
+  # Generic hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        name: Remove trailing whitespace
+        exclude: ^(.*\.lock|.*\.log)$
+
+      - id: end-of-file-fixer
+        name: Ensure files end with newline
+        exclude: ^(.*\.lock|.*\.log)$
+
+      - id: check-yaml
+        name: Check YAML syntax
+        exclude: ^\.github/workflows/
+
+      - id: check-json
+        name: Check JSON syntax
+
+      - id: check-toml
+        name: Check TOML syntax
+
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+
+      - id: debug-logger
+        name: Check for debug logging statements
+        args: [--pattern, "console\.(log|debug|info|warn|error)"]
+
+      - id: no-commit-to-branch
+        name: Prevent direct commits to main
+        args: [--branch, main, --branch, develop]
+
+  # Frontend linting
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: npx eslint . --ext .ts,.tsx,.js,.jsx
+        language: system
+        types: [javascript, typescript]
+        pass_filenames: false
+        require_serial: true
+
+      - id: prettier
+        name: Prettier formatting
+        entry: npx prettier --check .
+        language: system
+        types: [javascript, typescript, css, json, markdown]
+        pass_filenames: false
